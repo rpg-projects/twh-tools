@@ -1,14 +1,27 @@
 import { useState, useMemo } from "react";
 
+type OnSelectFn = (
+  nomePericia: string,
+  atributoAlternativo?: string | null
+) => string;
+
+interface ModalSimularDadosProps {
+  open: boolean;
+  onClose: () => void;
+  pericias?: Record<string, any>;
+  atributos?: Record<string, any>;
+  onSelect: OnSelectFn;
+}
+
 export function ModalSimularDados({
   open,
   onClose,
   pericias,
   atributos,
   onSelect,
-}) {
+}: ModalSimularDadosProps) {
   const [query, setQuery] = useState("");
-  const [resultado, setResultado] = useState(null);
+  const [resultado, setResultado] = useState("");
   const [showList, setShowList] = useState(true);
   const [atributoAlternativo, setAtributoAlternativo] = useState("");
 
@@ -35,7 +48,7 @@ export function ModalSimularDados({
     // 🧹 LIMPA TUDO AO FECHAR
     setQuery("");
     setAtributoAlternativo("");
-    setResultado(null);
+    setResultado("");
     setShowList(true);
     onClose();
   }
@@ -58,7 +71,7 @@ export function ModalSimularDados({
             setShowList(true);
 
             if (val.trim() === "") {
-              setResultado(null);
+              setResultado("");
               setAtributoAlternativo("");
             }
           }}

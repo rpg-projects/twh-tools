@@ -104,7 +104,7 @@ export function calcularDados({
   aprimoramentos: string[];
 }) {
   const valorPericia = pericias[nomePericia];
-  if (!valorPericia) return null;
+  if (!valorPericia) return "";
 
   // 1 — Atributo associado à perícia ("ESP")
   const atributoSiglaOriginal = extrairAtributoDaPericia(nomePericia);
@@ -117,7 +117,7 @@ export function calcularDados({
     a.startsWith(atributoParaUsar)
   );
 
-  if (!nomeAtributo) return null;
+  if (!nomeAtributo) return "";
 
   // 3 — Extrai valores
   const totalAtributo = extrairTotalAtributo(atributos[nomeAtributo]);
