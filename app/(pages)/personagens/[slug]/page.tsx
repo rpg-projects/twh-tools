@@ -3,6 +3,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { CompleteChar } from "@/types/chars";
 import { useParams } from "next/navigation";
+import Image from "next/image";
 
 import { calcularDados } from "@/lib/utils";
 import { ModalSimularDados } from "@/components/RollSimulation";
@@ -108,8 +109,6 @@ export default function PersonagemDetailPage() {
     );
   }
 
-  console.log("stats?.atributos :>> ", stats?.atributos);
-
   return (
     <main className="min-h-screen bg-[#f0f8ff] p-6 relative">
       {/* BOTÃO VOLTAR */}
@@ -123,10 +122,19 @@ export default function PersonagemDetailPage() {
       <div className="flex flex-col md:flex-row gap-6 mt-16 md:mt-10">
         {/* ====================== CARD ESQUERDA ====================== */}
         <div className="bg-white rounded-xl shadow p-6 w-full md:w-72 h-fit flex flex-col items-center">
-          <img
+          {/* <img
             src={char.avatar}
             alt={char.name}
             className="w-32 h-32 object-cover rounded-full border-2 border-blue-300"
+          /> */}
+          <Image
+            src={char.avatar}
+            alt={char.name}
+            width={96}
+            height={96}
+            className="rounded-full border-2 border-blue-300"
+            placeholder="blur"
+            blurDataURL="/images/avatar-fallback.png"
           />
 
           <span className="mt-3 px-4 py-1 bg-blue-400 text-white font-semibold rounded-full text-xs">
@@ -141,7 +149,9 @@ export default function PersonagemDetailPage() {
             </p>
             <p>Origem: {char.origin}</p>
             <p>Alinhamento: {char.alignment}</p>
-            {/* <p>Idade: {char.age}</p> */}
+            <p>
+              Idade: {char.age} | Nasceu em: {char.nascimento}
+            </p>
           </div>
 
           {/* BOTÕES DE TABS DENTRO DO CARD */}
@@ -245,7 +255,26 @@ export default function PersonagemDetailPage() {
                   <h3 className="font-semibold mb-2 text-blue-600">
                     Atributos
                   </h3>
-                  <table className="w-full text-sm border border-gray-300 rounded-lg overflow-hidden">
+
+                  {/* MOBILE: grid responsivo */}
+                  <div className="block md:hidden grid grid-cols-2 gap-3">
+                    {Object.entries((stats?.atributos as string[]) || {}).map(
+                      ([key, val]) => (
+                        <div
+                          key={key}
+                          className="border border-gray-300 rounded-lg p-2 text-center bg-gray-50"
+                        >
+                          <p className="font-bold text-gray-700 text-sm">
+                            {key}
+                          </p>
+                          <p className="text-gray-600">{val}</p>
+                        </div>
+                      )
+                    )}
+                  </div>
+
+                  {/* DESKTOP: tabela normal */}
+                  <table className="hidden md:table w-full text-sm border border-gray-300 rounded-lg overflow-hidden mt-3">
                     <tbody>
                       <tr className="bg-gray-50">
                         {Object.entries(
@@ -301,14 +330,14 @@ export default function PersonagemDetailPage() {
                         .map(([key, val], index) => (
                           <li
                             key={key}
-                            className="px-4 py-2 bg-gray-50 rounded-md border border-gray-200"
+                            className="px-1 md:px-4 py-2 bg-gray-50 rounded-md border border-gray-200"
                             style={
                               index < 4 && !val.startsWith("0/30")
                                 ? { border: "2px solid #d3caadff" }
                                 : {}
                             }
                           >
-                            <span className="font-semibold text-gray-700">
+                            <span className="font-semibold text-gray-700 text-xs md:text-base">
                               {key}
                             </span>
                             : <span className="text-gray-800">{val}</span>
@@ -318,23 +347,25 @@ export default function PersonagemDetailPage() {
                 </div>
 
                 {/* --- Aprimoramentos --- */}
-                <div>
-                  <h3 className="font-semibold mb-2 text-blue-600">
-                    Aprimoramentos
-                  </h3>
-                  <div className="grid grid-cols-2 gap-2">
-                    {stats?.aprimoramentos?.map((a: string, i: number) => {
-                      return (
-                        <div
-                          key={i}
-                          className="px-3 py-2 bg-yellow-50 border border-yellow-200 rounded-md text-gray-800"
-                        >
-                          {a}
-                        </div>
-                      );
-                    })}
+                {stats.aprimoramentos.length > 0 && (
+                  <div>
+                    <h3 className="font-semibold mb-2 text-blue-600">
+                      Aprimoramentos
+                    </h3>
+                    <div className="grid grid-cols-2 gap-2">
+                      {stats?.aprimoramentos?.map((a: string, i: number) => {
+                        return (
+                          <div
+                            key={i}
+                            className="px-1 md:px-3 py-2 text-sm md:text-base bg-yellow-50 border border-yellow-200 rounded-md text-gray-800"
+                          >
+                            {a}
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             </>
           ) : activeTab === "equipamentos" ? (

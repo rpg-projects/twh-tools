@@ -13,6 +13,7 @@ export interface CompleteChar {
   god: string;
   level: number;
   age: number;
+  nascimento: string;
   alignment: string;
   origin: string;
   avatar: string;

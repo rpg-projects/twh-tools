@@ -4,12 +4,22 @@ import Image from "next/image";
 import Link from "next/link";
 import greekBoy from "./images/greek-boy.png";
 import PlayerSelector from "@/components/playerSelector";
+import { useEffect, useState } from "react";
+import next from "next";
 
 export default function Home() {
+  const [playerKey, setPlayerKey] = useState("none");
+
+  useEffect(() => {
+    const stored = localStorage.getItem("player") || "none";
+
+    setPlayerKey(stored);
+  }, []);
+
   return (
     <main className="relative min-h-screen bg-[#f8f5f0] flex items-center justify-center p-6">
       {/* PLAYER SELECTOR envolve APENAS O MENU */}
-      <PlayerSelector>
+      <PlayerSelector key={playerKey}>
         <div className="flex flex-col gap-4 w-full max-w-sm z-10 ">
           <Link href="/personagens">
             <button className="w-full px-4 py-3 text-base font-semibold bg-white shadow rounded-xl hover:bg-gray-100 transition">

@@ -26,7 +26,8 @@ export default function PlayerSelector({
   useEffect(() => {
     async function loadPlayers() {
       try {
-        const res = await fetch("/api/generalRoutes", { cache: "no-store" });
+        const res = await fetch("/api/generalRoutes");
+
         const data = await res.json();
         setPlayers(data.players || []);
       } catch (e) {
@@ -91,7 +92,7 @@ export default function PlayerSelector({
     setOpened(false);
 
     try {
-      const res = await fetch("/api/googleRoutes", { cache: "no-store" });
+      const res = await fetch("/api/generalRoutes", { cache: "no-store" });
       const data = await res.json();
       setPlayers(data.players || []);
     } catch (e) {

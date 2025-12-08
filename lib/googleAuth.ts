@@ -10,12 +10,6 @@ const SCOPES = [
 ];
 
 export async function getAuthService() {
-  console.log("SERVICE_ACCOUNT_FILE :>> ", SERVICE_ACCOUNT_FILE);
-  console.log(
-    "process.env.GOOGLE_SERVICE_ACCOUNT_KEY :>> ",
-    process.env.GOOGLE_SERVICE_ACCOUNT_KEY
-  );
-
   const auth = new google.auth.GoogleAuth({
     credentials: SERVICE_ACCOUNT_FILE,
     scopes: SCOPES,

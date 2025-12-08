@@ -75,7 +75,7 @@ export default function PersonagensPage() {
           Nenhum personagem encontrado.
         </p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-7xl">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4  gap-4 w-full max-w-7xl">
           {chars.map((char, i) => (
             <div
               key={i}
@@ -89,7 +89,7 @@ export default function PersonagensPage() {
                   )}`
                 );
               }}
-              className="flex gap-2 p-4 bg-white rounded-xl shadow hover:shadow-lg transition cursor-pointer min-w-72"
+              className="flex gap-2 p-4 bg-white rounded-xl shadow hover:shadow-lg transition cursor-pointer min-w-64"
             >
               <div className="flex flex-col items-center">
                 <Image
@@ -109,12 +109,17 @@ export default function PersonagensPage() {
                 <p className="font-bold text-lg">{char.name}</p>
                 <p className="flex flex-wrap text-sm">
                   <span>Nível: {char.level}</span>
-                  <span className="mx-2">|</span>
+                  <span className="mx-2"> </span>
                   <span>Verão: {char.summer}</span>
                 </p>
                 <p className="text-sm text-gray-600">{char.origin}</p>
                 <p className="text-sm text-gray-600">{char.alignment}</p>
-                {/* <p className="text-sm text-gray-600">Idade: {char.age}</p> */}
+                <p className="text-sm text-gray-600"></p>
+                <p className="flex flex-wrap text-sm text-gray-600">
+                  <span>Idade: {char.age}</span>
+                  <span className="mx-2"> </span>
+                  <span>Nasceu em: {char.nascimento}</span>
+                </p>
               </div>
             </div>
           ))}

@@ -68,7 +68,7 @@ export async function readCharFile(doc: any) {
   const origin = mapa["CIDADE NATAL"] || "";
   const alignment = mapa["ALINHAMENTO"] || "";
   const nascimento = mapa["NASCIMENTO"] || "";
-  const age = parseDateAndGetAge(nascimento, "21/07/2020");
+  const age = parseDateAndGetAge(nascimento, "21/07/2022");
 
   const avatar =
     [...images]
@@ -80,7 +80,7 @@ export async function readCharFile(doc: any) {
       )
       .find((uri) => uri !== null) || "";
 
-  return { origin, alignment, age, avatar };
+  return { origin, alignment, age, avatar, nascimento };
 }
 
 export function processarConteudoCompleto(contentArray: any[]): {

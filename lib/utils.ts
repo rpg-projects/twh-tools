@@ -147,9 +147,8 @@ export function calcularDados({
     // console.log("atributoParaUsar :>> ", atributoParaUsar);
 
     if (contemPericia || contemAtributo) {
-      console.log("apr :>> ", apr);
       const valor = extrairBonusAprim(apr);
-      console.log("valor :>> ", valor);
+
       if (valor !== 0 && valor) {
         totalAprimoramentos.push(`${apr.split("(")[0].trim()}: ${valor} `);
         bonusAprimoramentos += valor;

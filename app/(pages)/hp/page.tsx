@@ -29,7 +29,6 @@ export default function HPPage() {
         });
 
         const data = await res.json();
-        console.log("data :>> ", data);
 
         // sua rota retorna { chars: [...] } ?
         // ou retorna diretamente a lista?

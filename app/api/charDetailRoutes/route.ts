@@ -26,8 +26,6 @@ export async function POST(req: Request) {
       chars
     );
 
-    console.log("data :>> ", data);
-
     return NextResponse.json(data);
   } catch (err) {
     console.error("Error in playerCharsDetails:", err);

@@ -9,7 +9,7 @@ interface ModalSimularDadosProps {
   open: boolean;
   onClose: () => void;
   pericias?: Record<string, any>;
-  atributos?: Record<string, any>;
+  atributos?: Record<string, string>;
   onSelect: OnSelectFn;
 }
 

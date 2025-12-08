@@ -109,14 +109,14 @@ export default class DocsService {
 
       try {
         const documentId = char.fileLink.split("/d/")[1].split("/")[0];
-        console.time(`doc-${char.name}`);
+
         const docData = await docs.documents.get({ documentId });
-        console.timeEnd(`doc-${char.name}`);
         const doc = docData.data;
 
-        const { origin, alignment, age, avatar } = await readCharFile(doc);
+        const { origin, alignment, age, avatar, nascimento } =
+          await readCharFile(doc);
 
-        return { ...char, origin, alignment, age, avatar };
+        return { ...char, origin, alignment, age, avatar, nascimento };
       } catch (error: any) {
         console.error(error.message);
         return { ...char, avatar: "", alignment: "", age: 0, origin: "" };
