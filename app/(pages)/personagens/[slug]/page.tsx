@@ -108,6 +108,8 @@ export default function PersonagemDetailPage() {
     );
   }
 
+  console.log("stats?.atributos :>> ", stats?.atributos);
+
   return (
     <main className="min-h-screen bg-[#f0f8ff] p-6 relative">
       {/* BOTÃO VOLTAR */}
@@ -246,17 +248,17 @@ export default function PersonagemDetailPage() {
                   <table className="w-full text-sm border border-gray-300 rounded-lg overflow-hidden">
                     <tbody>
                       <tr className="bg-gray-50">
-                        {Object.entries(stats?.atributos || {}).map(
-                          ([key, val]) => (
-                            <td
-                              key={key}
-                              className="px-3 py-2 border border-gray-300 text-center"
-                            >
-                              <p className="font-bold text-gray-700">{key}</p>
-                              <p className="text-gray-600">{val}</p>
-                            </td>
-                          )
-                        )}
+                        {Object.entries(
+                          (stats?.atributos as string[]) || {}
+                        ).map(([key, val]) => (
+                          <td
+                            key={key}
+                            className="px-3 py-2 border border-gray-300 text-center"
+                          >
+                            <p className="font-bold text-gray-700">{key}</p>
+                            <p className="text-gray-600">{val}</p>
+                          </td>
+                        ))}
                       </tr>
                     </tbody>
                   </table>
@@ -285,7 +287,7 @@ export default function PersonagemDetailPage() {
 
                   <ul className="grid grid-cols-2 gap-1">
                     {stats?.pericias &&
-                      Object.entries(stats.pericias)
+                      Object.entries(stats.pericias as string[])
                         .sort((a, b) => {
                           const getVal = (v: string) =>
                             parseInt(v.split("/")[0]);
