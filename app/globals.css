@@ -24,3 +24,14 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.no-wrap\:after-bar span:not(:last-child)::after {
+  content: " | ";
+}
+
+@media (max-width: 360px) {
+  /* Quando a linha provavelmente vai quebrar: remove o separador */
+  .no-wrap\:after-bar span::after {
+    content: "";
+  }
+}
