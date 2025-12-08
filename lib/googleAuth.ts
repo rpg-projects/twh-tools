@@ -1,7 +1,8 @@
 import { google } from "googleapis";
-import path from "path";
 
-const SERVICE_ACCOUNT_FILE = path.join(process.cwd(), "lilamontenegro.json");
+const SERVICE_ACCOUNT_FILE = JSON.parse(
+  process.env.GOOGLE_SERVICE_ACCOUNT_KEY!
+);
 
 const SCOPES = [
   "https://www.googleapis.com/auth/spreadsheets.readonly",
@@ -9,8 +10,14 @@ const SCOPES = [
 ];
 
 export async function getAuthService() {
+  console.log("SERVICE_ACCOUNT_FILE :>> ", SERVICE_ACCOUNT_FILE);
+  console.log(
+    "process.env.GOOGLE_SERVICE_ACCOUNT_KEY :>> ",
+    process.env.GOOGLE_SERVICE_ACCOUNT_KEY
+  );
+
   const auth = new google.auth.GoogleAuth({
-    keyFile: SERVICE_ACCOUNT_FILE,
+    credentials: SERVICE_ACCOUNT_FILE,
     scopes: SCOPES,
   });
 

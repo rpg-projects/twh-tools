@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 const service = new DocsService();
 
 export async function GET() {
+  console.log("oi");
   const players = await service.getPlayerNames();
   return NextResponse.json({ players });
 }
