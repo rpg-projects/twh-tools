@@ -65,6 +65,12 @@ export async function readCharFile(doc: any) {
   const { paragrafos, images } = processarConteudo(contentArray);
 
   const mapa = mapearParagrafos(paragrafos);
+  if (mapa["-"]) {
+    // ADES vai para perícias porque está no valor de "-"
+    mapa["ADESTRAMENTO (CAR)"] = mapa["-"];
+    delete mapa["-"];
+  }
+
   const origin = mapa["CIDADE NATAL"] || "";
   const alignment = mapa["ALINHAMENTO"] || "";
   const nascimento = mapa["NASCIMENTO"] || "";
@@ -303,41 +309,101 @@ function extrairPericias(mapa: Record<string, string>): Record<string, string> {
   return resultado;
 }
 
-// function extrairBifurcacoes(mapa: Record<string, string>): string[] {
-//   const resultado: string[] = [];
-//   let atual: string | undefined = "BIFURCAÇÕES";
+// função para extrair pares chave-valor
+function extrairSecaoMap(
+  mapa: Record<string, string>,
+  inicio: string,
+  fimOpcional?: string[]
+): Record<string, string> {
+  const resultado: Record<string, string> = {};
+  let atual = inicio;
 
-//   const titulosSecoes = [
-//     "ADESTRAMENTO (CAR)",
-//     "APRIMORAMENTOS",
-//     "EQUIPAMENTOS",
-//     "ITENS",
-//   ];
+  while (atual && (!fimOpcional || !fimOpcional.includes(atual))) {
+    const proximo = mapa[atual];
+    if (!proximo) break;
 
-//   while (atual) {
-//     const proximo = mapa[atual];
-//     if (!proximo) break;
+    // considera pares chave-valor
+    if (
+      !Object.keys(mapa).includes(proximo) ||
+      proximo.includes("(") ||
+      proximo.startsWith("●") ||
+      /\d/.test(proximo)
+    ) {
+      resultado[atual] = proximo;
+    } else if (
+      ![
+        "ATRIBUTOS",
+        "BIFURCAÇÕES",
+        "ADESTRAMENTO (CAR)",
+        "APRIMORAMENTOS",
+        "EQUIPAMENTOS",
+        "ITENS",
+      ].includes(proximo)
+    ) {
+      resultado[atual] = proximo;
+    }
 
-//     // se for título de outra seção, para
-//     if (titulosSecoes.includes(proximo)) break;
+    atual = proximo;
+  }
 
-//     resultado.push(proximo);
+  return resultado;
+}
 
-//     // vai para o próximo do mapa
-//     atual = proximo;
+// função para extrair lista de valores simples (para bifurcações, aprimoramentos, equipamentos, itens)
+function extrairSecaoList(
+  mapa: Record<string, string>,
+  inicio: string,
+  fimOpcional?: string[]
+): string[] {
+  const resultado: string[] = [];
+  let atual = inicio;
 
-//     // se chegar no "-", tenta pegar próximo nível manualmente
-//     if (atual === "-") {
-//       const possiveisNiveis = ["NÍVEL IV", "NÍVEL VI"];
-//       const next = possiveisNiveis.find(
-//         (lvl) => mapa[lvl] && !resultado.includes(lvl)
-//       );
-//       if (next) atual = next;
-//     }
-//   }
+  while (atual && (!fimOpcional || !fimOpcional.includes(atual))) {
+    const proximo = mapa[atual];
+    if (!proximo) break;
 
-//   return resultado;
-// }
+    if (proximo && !Object.keys(mapa).includes(proximo)) {
+      resultado.push(proximo);
+    } else if (
+      ![
+        "ATRIBUTOS",
+        "BIFURCAÇÕES",
+        "ADESTRAMENTO (CAR)",
+        "APRIMORAMENTOS",
+        "EQUIPAMENTOS",
+        "ITENS",
+      ].includes(proximo)
+    ) {
+      resultado.push(proximo);
+    }
+
+    atual = proximo;
+  }
+
+  return resultado;
+}
+
+function extrairBifurcacoes(mapa: Record<string, string>): string[] {
+  function extrairBloco(inicio: string): string[] {
+    const bloco: string[] = [inicio]; // adiciona o início
+    let atual = inicio;
+
+    while (atual) {
+      const proximo = mapa[atual];
+      if (!proximo || proximo === "ADESTRAMENTO (CAR)") break;
+
+      bloco.push(proximo);
+      atual = proximo;
+    }
+
+    return bloco;
+  }
+
+  const blocoII = extrairBloco("NÍVEL II");
+  const blocoVI = extrairBloco("NÍVEL VI");
+
+  return [...blocoII, ...blocoVI];
+}
 
 export async function readCharCompleteFile(doc: any) {
   const contentArray = doc.body.content;
@@ -355,82 +421,8 @@ export async function readCharCompleteFile(doc: any) {
   const nascimento = mapa["NASCIMENTO"] || "";
   const age = parseDateAndGetAge(nascimento, "21/07/2020");
 
-  // função para extrair pares chave-valor
-  function extrairSecaoMap(
-    mapa: Record<string, string>,
-    inicio: string,
-    fimOpcional?: string[]
-  ): Record<string, string> {
-    const resultado: Record<string, string> = {};
-    let atual = inicio;
-
-    while (atual && (!fimOpcional || !fimOpcional.includes(atual))) {
-      const proximo = mapa[atual];
-      if (!proximo) break;
-
-      // considera pares chave-valor
-      if (
-        !Object.keys(mapa).includes(proximo) ||
-        proximo.includes("(") ||
-        proximo.startsWith("●") ||
-        /\d/.test(proximo)
-      ) {
-        resultado[atual] = proximo;
-      } else if (
-        ![
-          "ATRIBUTOS",
-          "BIFURCAÇÕES",
-          "ADESTRAMENTO (CAR)",
-          "APRIMORAMENTOS",
-          "EQUIPAMENTOS",
-          "ITENS",
-        ].includes(proximo)
-      ) {
-        resultado[atual] = proximo;
-      }
-
-      atual = proximo;
-    }
-
-    return resultado;
-  }
-
-  // função para extrair lista de valores simples (para bifurcações, aprimoramentos, equipamentos, itens)
-  function extrairSecaoList(
-    mapa: Record<string, string>,
-    inicio: string,
-    fimOpcional?: string[]
-  ): string[] {
-    const resultado: string[] = [];
-    let atual = inicio;
-
-    while (atual && (!fimOpcional || !fimOpcional.includes(atual))) {
-      const proximo = mapa[atual];
-      if (!proximo) break;
-
-      if (proximo && !Object.keys(mapa).includes(proximo)) {
-        resultado.push(proximo);
-      } else if (
-        ![
-          "ATRIBUTOS",
-          "BIFURCAÇÕES",
-          "ADESTRAMENTO (CAR)",
-          "APRIMORAMENTOS",
-          "EQUIPAMENTOS",
-          "ITENS",
-        ].includes(proximo)
-      ) {
-        resultado.push(proximo);
-      }
-
-      atual = proximo;
-    }
-
-    return resultado;
-  }
-
   const atributos = extrairAtributos(mapa);
-  // const bifurcacoes = extrairBifurcacoes(mapa);
+  const bifurcacoes = extrairBifurcacoes(mapa);
   const pericias = extrairPericias(mapa);
   const aprimoramentos = extrairSecaoList(mapa, "APRIMORAMENTOS", [
     "EQUIPAMENTOS",
@@ -457,10 +449,37 @@ export async function readCharCompleteFile(doc: any) {
     age,
     avatar,
     atributos,
-    // bifurcacoes,
+    bifurcacoes,
     pericias,
     aprimoramentos,
     equipamentos,
     itens,
+  };
+}
+
+export async function getCharsHPComponents(doc: any) {
+  const contentArray = doc.body.content;
+
+  const { paragrafos } = processarConteudoCompleto(contentArray);
+  const mapa = mapearParagrafos(paragrafos);
+
+  const hp = mapa["PTS. VIDA"] || "";
+  const dp = mapa["DEF. PAS."] || "";
+  const de = mapa["DEF. ESP."] || "";
+
+  const atributos = extrairAtributos(mapa);
+  const bifurcacoes = extrairBifurcacoes(mapa);
+
+  const aprimoramentos = extrairSecaoList(mapa, "APRIMORAMENTOS", [
+    "EQUIPAMENTOS",
+  ]);
+
+  return {
+    hp,
+    dp,
+    de,
+    atributos,
+    bifurcacoes,
+    aprimoramentos,
   };
 }
