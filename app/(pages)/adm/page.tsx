@@ -1,5 +1,5 @@
 "use client";
-import { Char } from "@/types/chars";
+import { Char, ErrorsReportData } from "@/types/chars";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
@@ -12,7 +12,7 @@ export default function PersonagensPage() {
     {}
   );
   const [sumErrorsResults, setSumErrorsResults] = useState<
-    Record<string, any[]>
+    Record<string, ErrorsReportData[]>
   >({});
 
   const [loadingPlayers, setLoadingPlayers] = useState(true);
@@ -88,16 +88,16 @@ export default function PersonagensPage() {
 
           if (target === "search") {
             const ok = await callbackPerChar(char);
-            console.log("ok :>> ", ok);
 
             setCharStatus(ok ? "found" : "not-found");
             await new Promise((r) => setTimeout(r, 250));
 
             if (ok) found.push(char);
           } else if (target === "errors") {
-            const data = await callbackPerChar(char);
+            const data: ErrorsReportData = await callbackPerChar(char);
 
-            if (data.hasErrors) errors.push(data);
+            if (data.hasErrorsOnHPSum || data.hasErrorsOnAttSum)
+              errors.push(data);
           }
         }
 
@@ -146,16 +146,16 @@ export default function PersonagensPage() {
     setShowErrorsModal(false);
 
     await scanPlayers(async (char) => {
-      const res = await fetch("/api/checkHPErrors", {
+      const res = await fetch("/api/checkForErrors", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ char }),
       });
 
-      const data = await res.json();
-      // return data.hasErrors;
-      // console.log("data :>> ", data);
+      const data: ErrorsReportData = await res.json();
       return data;
+
+      // console.log("data :>> ", data);
     }, "errors");
   }
 
@@ -180,11 +180,19 @@ export default function PersonagensPage() {
       } else {
         for (const c of listErrors) {
           text += `  - ${c.charName} — ${c.fileLink}`;
-          const textPartTwo =
-            c.hpAtual &&
-            c.hpCorreto &&
-            ` - Hp atual: ${c.hpAtual} e Hp correto: ${c.hpCorreto} \n`;
+
+          const textPartTwo = c.hasErrorsOnHPSum
+            ? c.hpAtual &&
+              c.hpCorreto &&
+              `\n   Hp => atual: ${c.hpAtual} e Hp correto: ${c.hpCorreto}`
+            : "";
+          const textPartThree = c.hasErrorsOnAttSum
+            ? c.somaAtual &&
+              c.somaCorreta &&
+              `\n   Atributos => Soma atual: ${c.somaAtual} e soma correta: ${c.somaCorreta} \n`
+            : "\n";
           text += textPartTwo;
+          text += textPartThree;
         }
       }
       text += "\n";
@@ -362,17 +370,44 @@ export default function PersonagensPage() {
                           >
                             <p className="font-bold">⚠️ {char.charName}</p>
                             <p className="font-bold">{char.god}</p>
+                            {char.hasErrorsOnHPSum && (
+                              <>
+                                <p>
+                                  <b>Erro na conta do HP</b>
+                                </p>
 
-                            {char.hpAtual && (
-                              <p>
-                                <b>HP Atual:</b> {char.hpAtual}
-                              </p>
+                                {char.possuiResilienciaMortal && (
+                                  <p className="font-base">
+                                    resiliência mortal
+                                  </p>
+                                )}
+
+                                {char.hpAtual && (
+                                  <p>
+                                    <b>HP Atual:</b> {char.hpAtual}
+                                  </p>
+                                )}
+
+                                {char.hpCorreto && (
+                                  <p>
+                                    <b>HP Correto:</b> {char.hpCorreto}
+                                  </p>
+                                )}
+                              </>
                             )}
 
-                            {char.hpCorreto !== undefined && (
-                              <p>
-                                <b>HP Correto:</b> {char.hpCorreto}
-                              </p>
+                            {char.hasErrorsOnAttSum && (
+                              <>
+                                <p>
+                                  <b>Erro na soma de atributos</b>
+                                </p>
+                                <p>
+                                  <b>Soma atual:</b> {char.somaAtual}
+                                </p>
+                                <p>
+                                  <b>Soma correta:</b> {char.somaCorreta}
+                                </p>
+                              </>
                             )}
 
                             <a
@@ -387,7 +422,7 @@ export default function PersonagensPage() {
                       </ul>
                     ) : (
                       <p className="text-gray-500 mt-2 text-sm">
-                        Nenhum erro de somatório.
+                        Nenhum erro de hp ou soma de atributos.
                       </p>
                     )}
                   </>
@@ -433,16 +468,17 @@ export default function PersonagensPage() {
       {/* MODAL ERROS */}
       {showErrorsModal && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-xl w-96 shadow-xl">
+          <div className="bg-white p-6 rounded-xl w-72 md:w-102 shadow-xl">
             <h2 className="font-bold text-xl mb-4">
               Buscar erros de somatório
             </h2>
 
             <p className="text-gray-700 mb-4 text-sm">
-              Esta varredura verifica possíveis erros no cálculo de:
+              Esta varredura verifica possíveis erros nos cálculos de:
               <br />• HP total
-              <br />• DP total
-              <br />• DE total
+              <br />• Somatório de atribitos
+              {/* <br />• DP total */}
+              {/* <br />• DE total */}
             </p>
 
             <div className="flex justify-end gap-3">

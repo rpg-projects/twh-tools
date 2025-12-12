@@ -12,7 +12,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Envie o char." }, { status: 400 });
     }
 
-    const data = await service.checkHPErrors(char);
+    const data = await service.checkForErrors(char);
     return NextResponse.json(data);
   } catch (err: any) {
     console.error("ERRO NO POST /api/docs/search:", err);

@@ -464,8 +464,8 @@ export async function getCharsHPComponents(doc: any) {
   const mapa = mapearParagrafos(paragrafos);
 
   const hp = mapa["PTS. VIDA"] || "";
-  const dp = mapa["DEF. PAS."] || "";
-  const de = mapa["DEF. ESP."] || "";
+  // const dp = mapa["DEF. PAS."] || "";
+  // const de = mapa["DEF. ESP."] || "";
 
   const atributos = extrairAtributos(mapa);
   const bifurcacoes = extrairBifurcacoes(mapa);
@@ -476,8 +476,6 @@ export async function getCharsHPComponents(doc: any) {
 
   return {
     hp,
-    dp,
-    de,
     atributos,
     bifurcacoes,
     aprimoramentos,

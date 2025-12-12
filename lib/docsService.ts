@@ -87,12 +87,18 @@ export default class DocsService {
       if (cell.textFormatRuns?.[0]?.format?.link?.uri)
         fileLink = cell.textFormatRuns[0].format.link.uri;
 
+      const level =
+        row.values[3]?.userEnteredValue?.stringValue === "Formado" ||
+        row.values[3]?.userEnteredValue?.stringValue === "Formada"
+          ? 8
+          : row.values[3]?.userEnteredValue?.numberValue ?? 0;
+
       chars.push({
         summer,
         name,
         fileLink,
         god: row.values[2]?.userEnteredValue?.stringValue ?? "",
-        level: row.values[3]?.userEnteredValue?.numberValue ?? 0,
+        level,
       });
     }
 
@@ -211,12 +217,63 @@ export default class DocsService {
     };
   }
 
+  calcularSomatorioDeAtributo(
+    level: number,
+    atributos: Record<string, string>
+  ): { hasErrorsOnAttSum: boolean; somaAtual: number; somaCorreta: number } {
+    let somaCorreta = 0;
+
+    switch (level) {
+      case 1:
+        somaCorreta = 3;
+        break;
+      case 2:
+        somaCorreta = 5;
+        break;
+      case 3:
+        somaCorreta = 7;
+        break;
+      case 4:
+        somaCorreta = 9;
+        break;
+      case 5:
+        somaCorreta = 11;
+        break;
+      case 6:
+        somaCorreta = 13;
+        break;
+      case 7:
+        somaCorreta = 16;
+        break;
+      case 8:
+        somaCorreta = 19;
+        break;
+    }
+
+    let somaAtual = 0;
+    for (const [chave, valor] of Object.entries(atributos)) {
+      if (!valor) somaAtual += 0;
+
+      // pega somente o primeiro número encontrado (com + ou -)
+      const match = valor.match(/[+-]?\d+/);
+      somaAtual += match ? Number(match[0]) : 0;
+    }
+
+    return {
+      hasErrorsOnAttSum: somaAtual !== somaCorreta,
+      somaAtual,
+      somaCorreta,
+    };
+  }
+
   parseAtributo(valor: string | undefined): number {
     if (!valor) return 0;
 
-    // pega somente o primeiro número encontrado (com + ou -)
-    const match = valor.match(/[+-]?\d+/);
-    return match ? Number(match[0]) : 0;
+    // pega TODOS os números com + ou -
+    const matches = valor.match(/[+-]?\d+/g);
+    if (!matches) return 0;
+
+    return matches.reduce((sum, numStr) => sum + Number(numStr), 0);
   }
 
   getVigorBonus(aprimoramentos: string[]): number {
@@ -250,31 +307,30 @@ export default class DocsService {
     possuiResilienciaMortal: boolean;
   }): number {
     const godLower = god.toLowerCase();
+    let base = 0;
 
     // ⭐ REGRA 1 — Nêmesis nível ≥ 5
     if (godLower === "nêmesis" && level >= 5) {
-      return (10 + CON + ESP) * 2 + (level - 1) * (5 + CON) + vigorBonus;
+      base = (10 + CON + ESP) * 2 + (level - 1) * (5 + CON) + vigorBonus;
     }
 
     // ⭐ REGRA 2 — Thanatos ≥ 3
     if (godLower === "thanatos" && level >= 3 && !possuiResilienciaMortal) {
-      return (10 + CON) * 2 + (level - 1) * (5 + CON + ESP / 2) + vigorBonus;
+      base = (10 + CON) * 2 + (level - 1) * (5 + CON + ESP / 2) + vigorBonus;
     }
 
     // ⭐ REGRA 3 — Thanatos com Resiliência Mortal
     if (godLower === "thanatos" && possuiResilienciaMortal) {
-      return (10 + CON) * 2 + (level - 1) * (5 + CON + ESP) + vigorBonus;
+      base = (10 + CON) * 2 + (level - 1) * (5 + CON + ESP) + vigorBonus;
     }
 
-    console.log("CON :>> ", CON);
-    console.log("level :>> ", level);
-    console.log("vigorBonus :>> ", vigorBonus);
-
     // ⭐ REGRA 4 — Qualquer outro char
-    return (10 + CON) * 2 + (level - 1) * (5 + CON) + vigorBonus;
+    base = (10 + CON) * 2 + (level - 1) * (5 + CON) + vigorBonus;
+
+    return base;
   }
 
-  async checkHPErrors(char: Char) {
+  async checkForErrors(char: Char) {
     const { docs } = await getAuthService();
 
     // const charsArray = typeof chars === "string" ? JSON.parse(chars) : chars;
@@ -288,16 +344,21 @@ export default class DocsService {
       const docData = await docs.documents.get({ documentId });
       const doc = docData.data;
 
-      console.log("char.name :>> ", char.name);
-      const { hp, dp, de, atributos, bifurcacoes, aprimoramentos } =
+      const { hp, atributos, bifurcacoes, aprimoramentos } =
         await getCharsHPComponents(doc);
+
+      //return hasErrorsOnAttSum, somaAtual, somaCorreta
+      const { hasErrorsOnAttSum, somaAtual, somaCorreta } =
+        this.calcularSomatorioDeAtributo(char.level, atributos);
+
+      console.log("somaAtual :>> ", somaAtual);
+      console.log("somaCorreta :>> ", somaCorreta);
 
       const baseHp = Number(hp.split(" ")[0]);
 
       const CONS = this.parseAtributo(atributos["CONSTITUIÇÃO"]);
       const ESP = this.parseAtributo(atributos["ESPÍRITO"]);
 
-      console.log("aprimoramentos :>> ", aprimoramentos);
       const vigorBonus = this.getVigorBonus(aprimoramentos);
 
       const hasResilienciaMortal =
@@ -316,11 +377,16 @@ export default class DocsService {
       });
 
       return {
-        hasErrors: baseHp !== hpCorreto,
+        charName: char.name,
+        god: char.god,
+        hasErrorsOnHPSum: baseHp !== hpCorreto,
         hpAtual: baseHp,
         hpCorreto,
-        charName: char.name,
         fileLink: char.fileLink,
+        possuiResilienciaMortal: hasResilienciaMortal,
+        hasErrorsOnAttSum,
+        somaAtual,
+        somaCorreta,
       };
     } catch (error: any) {
       console.error(error.message);
@@ -328,37 +394,3 @@ export default class DocsService {
     }
   }
 }
-
-//name, summer, god, level, fileLink
-// async getPlayersChars(name: string) {
-//   const { docs } = await getAuthService();
-
-//   const { chars } = await this.getPlayersSheet(name);
-
-//   console.log("chars :>> ", chars);
-
-//   return chars;
-
-//   const promises = chars.map(async (char) => {
-//     if (!char.fileLink) {
-//       return { ...char, avatar: "", alignment: "", age: 0, origin: "" };
-//     }
-
-//     try {
-//       const documentId = char.fileLink.split("/d/")[1].split("/")[0];
-//       console.time(`doc-${char.name}`);
-//       const docData = await docs.documents.get({ documentId });
-//       console.timeEnd(`doc-${char.name}`);
-//       const doc = docData.data;
-
-//       const { origin, alignment, age, avatar } = await readCharFile(doc);
-
-//       return { ...char, origin, alignment, age, avatar };
-//     } catch (error: any) {
-//       console.error(error.message);
-//       return { ...char, avatar: "", alignment: "", age: 0, origin: "" };
-//     }
-//   });
-
-//   return await Promise.all(promises);
-// }

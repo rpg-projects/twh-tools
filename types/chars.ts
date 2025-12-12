@@ -24,3 +24,16 @@ export interface PlayerBank {
   dracmas: string | null | undefined;
   kleos: string | null | undefined;
 }
+
+export interface ErrorsReportData {
+  charName: string;
+  god: string;
+  hasErrorsOnHPSum: boolean;
+  hpAtual: number;
+  hpCorreto: number;
+  fileLink: string;
+  possuiResilienciaMortal: boolean;
+  hasErrorsOnAttSum: boolean;
+  somaAtual: number;
+  somaCorreta: number;
+}
