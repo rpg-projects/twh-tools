@@ -3,6 +3,7 @@ import { CompleteChar } from "@/types/chars";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { titleFont } from "@/app/fonts";
 
 export default function PersonagensPage() {
   const router = useRouter();
@@ -40,7 +41,7 @@ export default function PersonagensPage() {
   }, []);
 
   return (
-    <main className="relative min-h-screen bg-[#f0f8ff] p-4 flex flex-col items-center">
+    <main className="relative min-h-screen bg-[#f8f5f0] p-4 flex flex-col items-center">
       <button
         onClick={() => router.back()}
         className="absolute top-6 left-6 px-4 py-2 bg-white shadow rounded-xl text-sm hover:bg-gray-100 transition"
@@ -48,7 +49,9 @@ export default function PersonagensPage() {
         ← Voltar
       </button>
 
-      <h1 className="text-2xl font-bold mt-12 md:mt-8 mb-6">
+      <h1
+        className={`${titleFont.className} text-2xl text-[1.8rem] font-bold mt-12 md:mt-8 mb-6`}
+      >
         Meus Personagens
       </h1>
 

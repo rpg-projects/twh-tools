@@ -309,6 +309,7 @@ export default class DocsService {
     const godLower = god.toLowerCase();
     let base = 0;
 
+    console.log("godLower :>> ", godLower);
     // ⭐ REGRA 1 — Nêmesis nível ≥ 5
     if (godLower === "nêmesis" && level >= 5) {
       base = (10 + CON + ESP) * 2 + (level - 1) * (5 + CON) + vigorBonus;

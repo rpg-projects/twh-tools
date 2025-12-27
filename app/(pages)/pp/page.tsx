@@ -1,4 +1,5 @@
 "use client";
+import { titleFont } from "@/app/fonts";
 import { useRouter } from "next/navigation";
 
 export default function PPPage() {
@@ -13,7 +14,11 @@ export default function PPPage() {
         ← Voltar
       </button>
 
-      <h1 className="text-2xl font-bold mt-20 mb-6">Disponibilidade de PP</h1>
+      <h1
+        className={`${titleFont.className} text-2xl font-bold mt-12 md:mt-8 mb-6`}
+      >
+        Disponibilidade de PP
+      </h1>
 
       <div className="w-full max-w-md bg-white rounded-xl shadow p-4">
         {/* Conteúdo */}

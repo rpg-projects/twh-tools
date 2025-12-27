@@ -23,7 +23,7 @@ export default function Home() {
         <div className="flex flex-col gap-4 w-full max-w-sm z-10 ">
           <Link href="/personagens">
             <button className="w-full px-4 py-3 text-base font-semibold bg-white shadow rounded-xl hover:bg-gray-100 transition">
-              Meus chars
+              Meus personagens
             </button>
           </Link>
 
@@ -39,7 +39,7 @@ export default function Home() {
             </button>
           </Link>
 
-          <Link href="/loja">
+          <Link href="/lojas">
             <button className="w-full px-4 py-3 text-base font-semibold bg-white shadow rounded-xl hover:bg-gray-100 transition">
               Fazer Compras
             </button>

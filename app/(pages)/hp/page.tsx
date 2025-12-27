@@ -1,5 +1,6 @@
 "use client";
 
+import { titleFont } from "@/app/fonts";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -53,13 +54,17 @@ export default function HPPage() {
         ← Voltar
       </button>
 
-      <h1 className="text-2xl font-bold mt-20 mb-6">Calculadora de HP</h1>
+      <h1
+        className={`${titleFont.className} text-2xl font-bold mt-12 md:mt-8 mb-6`}
+      >
+        Calculadora de HP
+      </h1>
 
       <div className="w-full max-w-md bg-white rounded-xl shadow p-4">
         {loading && <p className="text-gray-600">Carregando personagens...</p>}
 
         {!loading && chars.length === 0 && (
-          <p className="text-gray-600">Nenhum personagem encontrado.</p>
+          <p className="text-gray-600">Em desenvolvimento.</p>
         )}
 
         {!loading &&

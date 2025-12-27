@@ -1,5 +1,6 @@
 "use client";
 
+import { titleFont } from "@/app/fonts";
 import { useEffect, useState } from "react";
 
 function GreekLoader() {
@@ -110,7 +111,7 @@ export default function PlayerSelector({
     const rest = player.slice(1);
 
     return (
-      <div className="-mt-36 md:-mt-16">
+      <div className="-mt-48 md:-mt-36">
         <button
           onClick={resetPlayer}
           className="absolute top-4 left-4 px-4 py-2 bg-white shadow rounded-xl text-sm hover:bg-gray-100 transition z-50"
@@ -119,7 +120,7 @@ export default function PlayerSelector({
         </button>
 
         <div className="relative flex flex-col items-center gap-4 w-full">
-          <h2 className="text-xl font-bold">
+          <h2 className={`${titleFont.className} text-[1.6rem] font-bold`}>
             Olá, {first.toUpperCase() + rest.toLowerCase()}
           </h2>
           {children}
@@ -130,7 +131,7 @@ export default function PlayerSelector({
 
   // Seleção do player
   return (
-    <div className="flex flex-col -mt-24 gap-2 w-80">
+    <div className="flex flex-col -mt-32 gap-2 w-80">
       <div className="relative">
         <input
           value={inputValue}
