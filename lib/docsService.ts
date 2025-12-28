@@ -5,6 +5,10 @@ import {
   readCharCompleteFile,
   processarConteudoCompleto,
   getCharsHPComponents,
+  processarConteudo,
+  extrairSecaoList,
+  extrairSecaoLojas,
+  parseAprimoramentos,
 } from "./processors/processCharFile";
 import { Char, PlayerBank } from "@/types/chars";
 
@@ -393,5 +397,27 @@ export default class DocsService {
       console.error(error.message);
       return { ...char, avatar: "", alignment: "", age: 0, origin: "" };
     }
+  }
+
+  async getAprimoramentosStore(fileLink: string) {
+    const { docs } = await getAuthService();
+
+    const documentId = fileLink.split("/d/")[1]?.split("/")[0];
+    if (!documentId) throw new Error("Link de documento inválido");
+
+    const docData = await docs.documents.get({ documentId });
+    const content = docData.data.body?.content || [];
+
+    const { paragrafos } = processarConteudo(content);
+
+    const mapa = mapearParagrafos(paragrafos);
+    let aprimoramentos = extrairSecaoLojas(
+      paragrafos,
+      "APRIMORAMENTOS OFENSIVOS"
+    );
+
+    const result = parseAprimoramentos(aprimoramentos);
+
+    return result;
   }
 }

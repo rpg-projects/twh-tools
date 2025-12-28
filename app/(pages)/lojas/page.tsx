@@ -1,13 +1,16 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Loja } from "@/types/loja";
+import { Loja, StoreAprimoramentos } from "@/types/loja";
 import { MOCK_LOJAS } from "@/lib/mocks";
 import { titleFont } from "@/app/fonts";
 
 export default function LojaPage() {
   const router = useRouter();
-  const [lojas, setLojas] = useState<Loja[]>([]);
+  // const [lojas, setLojas] = useState<Loja[]>([]);
+
+  const [aprimoramentos, setAprimoramentos] = useState<StoreAprimoramentos>([]);
+
   const [loading, setLoading] = useState(true);
   const [player, setPlayer] = useState("");
   const [playerBank, setPlayerBank] = useState<{
@@ -25,10 +28,13 @@ export default function LojaPage() {
       try {
         setLoading(true);
 
-        // simula delay de API
-        await new Promise((resolve) => setTimeout(resolve, 400));
+        const res = await fetch("/api/getStores", {
+          cache: "no-store",
+        });
 
-        setLojas(MOCK_LOJAS);
+        const data = await res.json();
+
+        setAprimoramentos(data.aprimoramentos ?? []);
       } catch (err) {
         console.error("Erro ao carregar lojas", err);
       } finally {
@@ -91,7 +97,7 @@ export default function LojaPage() {
     { id: "boticario", label: "Boticário" },
   ];
 
-  const lojasFiltradas = lojas.filter((loja) => loja.slug === activeTab);
+  // const lojasFiltradas = lojas.filter((loja) => loja.slug === activeTab);
 
   return (
     <main className="relative min-h-screen bg-[#f8f5f0] p-4 flex flex-col items-center">
@@ -174,7 +180,7 @@ export default function LojaPage() {
         ))}
       </div>
 
-      {loading ? (
+      {/* {loading ? (
         <p className="mt-20 text-gray-600 text-lg">Carregando lojas...</p>
       ) : lojasFiltradas.length === 0 ? (
         <p className="mt-20 text-gray-500 text-sm">
@@ -220,6 +226,57 @@ export default function LojaPage() {
             </div>
           ))}
         </div>
+      )} */}
+
+      {loading ? (
+        <p className="mt-20 text-gray-600 text-lg">Carregando lojas...</p>
+      ) : activeTab === "aprimoramentos" ? (
+        <div className="w-full max-w-5xl flex flex-col gap-10">
+          {aprimoramentos.map((grupo, index) => (
+            <section key={`${grupo.categoria}-${grupo.nivel}-${index}`}>
+              {/* Categoria + nível */}
+              <h2
+                className={`${titleFont.className} text-lg mb-3 text-[#7a5c2e]`}
+              >
+                {grupo.categoria} · Nível {grupo.nivel}
+              </h2>
+
+              {/* Itens */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {grupo.itens.map((item, i) => (
+                  <div
+                    key={`${item.nome}-${i}`}
+                    className="bg-white rounded-xl shadow-sm border border-yellow-700/20 p-4 flex flex-col gap-2"
+                  >
+                    <div className="flex justify-between items-start gap-4">
+                      <h3 className="font-semibold text-sm text-gray-900">
+                        {item.nome}
+                      </h3>
+
+                      <span className="text-xs font-bold text-[#8b6a34] whitespace-nowrap">
+                        {item.custo}
+                      </span>
+                    </div>
+
+                    {item.descricao && (
+                      <p className="text-xs text-gray-600 leading-relaxed">
+                        {item.descricao}
+                      </p>
+                    )}
+
+                    <button className="mt-2 self-end px-3 py-1.5 text-xs rounded-lg bg-[#ba9963] text-white hover:bg-[#9e7f4f] transition">
+                      Adicionar ao carrinho
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </section>
+          ))}
+        </div>
+      ) : (
+        <p className="mt-20 text-gray-500 text-sm">
+          Nenhuma loja disponível nesta categoria.
+        </p>
       )}
 
       {/* {loading ? (

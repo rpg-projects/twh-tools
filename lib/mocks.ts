@@ -88,3 +88,45 @@ export const MOCK_LOJAS = [
     ],
   },
 ];
+
+// mocks/loja-aprimoramentos.ts
+import { LojaAprimoramentos } from "@/types/loja";
+
+export const lojaAprimoramentos: LojaAprimoramentos = {
+  categorias: [
+    {
+      tipo: "ofensivo",
+      label: "Aprimoramentos Ofensivos",
+      descricao: "Habilidades voltadas para dano, ataque e combate direto.",
+      aprimoramentos: [
+        {
+          id: "ataque-improvisado",
+          nome: "Ataque Improvisado",
+          descricao:
+            "Ao improvisar qualquer objeto como arma, o semideus recebe bônus de +3 de ataque.",
+          nivel: 1,
+          custo: 150,
+          categoria: "ofensivo",
+        },
+        {
+          id: "ambidestria",
+          nome: "Ambidestria",
+          descricao:
+            "Permite realizar dois ataques seguidos com duas armas ou uma arma de duas mãos. O segundo ataque causa metade do dano.",
+          nivel: 2,
+          custo: 400,
+          categoria: "ofensivo",
+        },
+        {
+          id: "potencia-armada",
+          nome: "Potência Armada",
+          descricao:
+            "Todo ataque efetivo causa +2 de dano, independentemente do tipo de arma.",
+          nivel: 3,
+          custo: 600,
+          categoria: "ofensivo",
+        },
+      ],
+    },
+  ],
+};
