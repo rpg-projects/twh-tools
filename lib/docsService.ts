@@ -410,7 +410,6 @@ export default class DocsService {
 
     const { paragrafos } = processarConteudo(content);
 
-    const mapa = mapearParagrafos(paragrafos);
     let aprimoramentos = extrairSecaoLojas(
       paragrafos,
       "APRIMORAMENTOS OFENSIVOS"

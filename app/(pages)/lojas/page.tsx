@@ -9,6 +9,8 @@ export default function LojaPage() {
   const router = useRouter();
   // const [lojas, setLojas] = useState<Loja[]>([]);
 
+  const [isLogged, setIsLogged] = useState(true);
+
   const [aprimoramentos, setAprimoramentos] = useState<StoreAprimoramentos>([]);
 
   const [loading, setLoading] = useState(true);
@@ -48,7 +50,9 @@ export default function LojaPage() {
       const playerBank = localStorage.getItem("playerBank");
 
       if (!playerName || !savedChars || !playerBank) {
-        router.push("/");
+        setIsLogged(false);
+        localStorage.setItem("visitedBy", "lojas");
+
         return;
       }
 
@@ -113,46 +117,59 @@ export default function LojaPage() {
         <h2 className="text-xs font-semibold tracking-wide text-yellow-900/80 mb-2 flex items-center gap-1">
           🏛️ Meu banco do Olimpo
         </h2>
-        <div className="flex items-center gap-6 text-sm">
-          {/* Pontos */}
-          <div className="flex items-center gap-2">
-            <span className="text-lg">⚡</span>
-            <div className="leading-tight">
-              <p className="text-[10px] uppercase tracking-wide text-gray-500">
-                Pontos
-              </p>
-              <p className="font-semibold text-gray-900">
-                {playerBank.pontos ?? 0}
-              </p>
-            </div>
-          </div>
+        {!isLogged ? (
+          <div className="text-xs text-gray-600 flex flex-col gap-2">
+            <p>Faça login para ver seus números.</p>
 
-          {/* Dracmas */}
-          <div className="flex items-center gap-2">
-            <span className="text-lg">🪙</span>
-            <div className="leading-tight">
-              <p className="text-[10px] uppercase tracking-wide text-gray-500">
-                Dracmas
-              </p>
-              <p className="font-semibold text-gray-900">
-                {playerBank.dracmas ?? 0}
-              </p>
-            </div>
+            <button
+              onClick={() => router.push("/")}
+              className="self-start px-3 py-1.5 rounded-lg bg-[#ba9963] text-white text-xs hover:bg-[#9e7f4f] transition"
+            >
+              Ir para login
+            </button>
           </div>
+        ) : (
+          <div className="flex items-center gap-6 text-sm">
+            {/* Pontos */}
+            <div className="flex items-center gap-2">
+              <span className="text-lg">⚡</span>
+              <div className="leading-tight">
+                <p className="text-[10px] uppercase tracking-wide text-gray-500">
+                  Pontos
+                </p>
+                <p className="font-semibold text-gray-900">
+                  {playerBank.pontos ?? 0}
+                </p>
+              </div>
+            </div>
 
-          {/* Kleos */}
-          <div className="flex items-center gap-2">
-            <span className="text-lg">🏛️</span>
-            <div className="leading-tight">
-              <p className="text-[10px] uppercase tracking-wide text-gray-500">
-                Kleos
-              </p>
-              <p className="font-semibold text-gray-900">
-                {playerBank.kleos ?? 0}
-              </p>
+            {/* Dracmas */}
+            <div className="flex items-center gap-2">
+              <span className="text-lg">🪙</span>
+              <div className="leading-tight">
+                <p className="text-[10px] uppercase tracking-wide text-gray-500">
+                  Dracmas
+                </p>
+                <p className="font-semibold text-gray-900">
+                  {playerBank.dracmas ?? 0}
+                </p>
+              </div>
+            </div>
+
+            {/* Kleos */}
+            <div className="flex items-center gap-2">
+              <span className="text-lg">🏛️</span>
+              <div className="leading-tight">
+                <p className="text-[10px] uppercase tracking-wide text-gray-500">
+                  Kleos
+                </p>
+                <p className="font-semibold text-gray-900">
+                  {playerBank.kleos ?? 0}
+                </p>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
 
       <h1

@@ -503,89 +503,6 @@ export function extrairSecaoLojas(
   return paragrafos.slice(startIndex, endIndex !== -1 ? endIndex : undefined);
 }
 
-export function parseAprimoramentosO(raw: string[]): StoreAprimoramentos {
-  const result: StoreAprimoramentos = [];
-
-  let categoriaAtual = "";
-  let nivelAtual: number | null = null;
-  let itensBuffer: {
-    nome: string;
-    custo: string;
-    descricao: string;
-  }[] = [];
-
-  const flush = () => {
-    if (categoriaAtual && nivelAtual !== null && itensBuffer.length > 0) {
-      result.push({
-        categoria: categoriaAtual,
-        nivel: nivelAtual,
-        itens: itensBuffer,
-      });
-    }
-    itensBuffer = [];
-  };
-
-  let i = 0;
-
-  while (i < raw.length) {
-    const linha = raw[i]?.trim();
-
-    if (!linha) {
-      i++;
-      continue;
-    }
-
-    // 📦 Categoria
-    if (linha.startsWith("APRIMORAMENTOS")) {
-      flush();
-      categoriaAtual = linha;
-      nivelAtual = null;
-      i++;
-      continue;
-    }
-
-    // 🎚️ Nível
-    if (linha.startsWith("NÍVEL")) {
-      flush();
-      nivelAtual = Number(linha.replace("NÍVEL", "").trim());
-      i++;
-      continue;
-    }
-
-    // 🛒 Item
-    const nome = linha;
-    const custo = raw[i + 1]?.trim() ?? "";
-
-    let descricao = "";
-    let j = i + 2;
-
-    while (
-      j < raw.length &&
-      !raw[j].startsWith("APRIMORAMENTOS") &&
-      !raw[j].startsWith("NÍVEL")
-    ) {
-      const linhaDesc = raw[j].trim();
-
-      // evita pegar outro item por acidente
-      if (/^\d+\s*PONTOS/.test(linhaDesc)) break;
-
-      descricao += (descricao ? " " : "") + linhaDesc;
-      j++;
-    }
-
-    itensBuffer.push({
-      nome,
-      custo,
-      descricao,
-    });
-
-    i = j;
-  }
-
-  flush();
-  return result;
-}
-
 export function parseAprimoramentos(raw: string[]) {
   const result: StoreAprimoramentos = [];
 
@@ -624,9 +541,6 @@ export function parseAprimoramentos(raw: string[]) {
             !raw[i].startsWith("APRIMORAMENTOS") &&
             !raw[i].startsWith("NÍVEL")
           ) {
-            // console.log("nome :>> ", raw[i]);
-            // console.log("custo :>> ", raw[i + 1]);
-            // console.log("desc :>> ", raw[i + 2]);
             let observacao = "";
             if (raw[i + 3] !== undefined && raw[i + 3].startsWith("Não pode")) {
               observacao = raw[i + 3];
@@ -648,8 +562,6 @@ export function parseAprimoramentos(raw: string[]) {
           }
         }
 
-        console.log("categoriaAtual :>> ", categoriaAtual);
-        console.log("nivelAtual :>> ", nivelAtual);
         result.push({
           categoria: categoriaAtual,
           nivel: nivelAtual!,

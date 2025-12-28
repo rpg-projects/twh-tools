@@ -1,6 +1,7 @@
 "use client";
 
 import { titleFont } from "@/app/fonts";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 function GreekLoader() {
@@ -16,6 +17,8 @@ export default function PlayerSelector({
 }: {
   children: React.ReactNode;
 }) {
+  const router = useRouter();
+
   const [player, setPlayer] = useState(""); // 🔥 player escolhido
   const [inputValue, setInputValue] = useState(""); // 🔥 o texto digitado
   const [players, setPlayers] = useState<string[]>([]);
@@ -78,6 +81,9 @@ export default function PlayerSelector({
 
       localStorage.setItem("playerChars", JSON.stringify(data.chars));
       localStorage.setItem("playerBank", JSON.stringify(data.playerBank));
+
+      const visitedBy = localStorage.getItem("visitedBy");
+      if (visitedBy !== null) router.push(visitedBy);
     } catch (err) {
       console.error("save error:", err);
     }

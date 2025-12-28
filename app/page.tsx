@@ -1,5 +1,4 @@
 "use client";
-import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import greekBoy from "./images/greek-boy.png";
