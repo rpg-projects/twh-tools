@@ -14,7 +14,11 @@ export default function LojaPage() {
   const [aprimoramentos, setAprimoramentos] = useState<StoreAprimoramentos>([]);
 
   const [loading, setLoading] = useState(true);
+
   const [player, setPlayer] = useState("");
+  const [playerChars, setPlayerChars] = useState<{ name: string }[]>([]);
+  const [selectedChar, setSelectedChar] = useState<string>("");
+
   const [playerBank, setPlayerBank] = useState<{
     pontos?: number;
     dracmas?: number;
@@ -24,6 +28,9 @@ export default function LojaPage() {
   const [activeTab, setActiveTab] = useState<
     "aprimoramentos" | "conquistas" | "arsenal" | "boticario"
   >("aprimoramentos");
+  const [activeCategoria, setActiveCategoria] = useState<
+    "OFENSIVOS" | "DEFENSIVOS" | "UTILITARIOS" | "MAGICOS" | "COTIDIANOS"
+  >("OFENSIVOS");
 
   useEffect(() => {
     async function loadLojas() {
@@ -63,31 +70,12 @@ export default function LojaPage() {
         kleos: Number(parsedBank.kleos),
       });
 
-      //  const chars = JSON.parse(playerBank);
-      // setChars(chars);
-
-      console.log("playerName :>> ", playerName);
-      console.log("playerBank :>> ", playerBank);
-      // {"pontos":"5370","dracmas":"2910","kleos":"3642"}
+      let parsedChars = JSON.parse(savedChars);
+      // parsedChars = parsedChars.map((char: any) => char.name.trim());
+      setPlayerChars(parsedChars);
+      console.log("parsedChars :>> ", parsedChars);
 
       setPlayer(playerName);
-
-      // 🔥 PRELOAD DO PLAYER SHEET
-      // try {
-      //   const res = await fetch("/api/generalRoutes", {
-      //     method: "POST",
-      //     headers: { "Content-Type": "application/json" },
-      //     body: JSON.stringify({ name: final }),
-      //   });
-
-      //   // aqui é seguro chamar .json()
-      //   const data = await res.json();
-
-      //   localStorage.setItem("playerChars", JSON.stringify(data.chars));
-      //   localStorage.setItem("playerBank", JSON.stringify(data.playerBank));
-      // } catch (err) {
-      //   console.error("save error:", err);
-      // }
     }
 
     loadLojas();
@@ -101,19 +89,29 @@ export default function LojaPage() {
     { id: "boticario", label: "Boticário" },
   ];
 
+  const categorias = [
+    { id: "OFENSIVOS", label: "Ofensivos" },
+    { id: "DEFENSIVOS", label: "Defensivos" },
+    { id: "UTILITÁRIOS", label: "Utilitários" },
+    { id: "MÁGICOS", label: "Mágicos" },
+    { id: "COTIDIANOS", label: "Cotidianos" },
+  ];
+
   // const lojasFiltradas = lojas.filter((loja) => loja.slug === activeTab);
+  const aprimoramentosFiltrados = aprimoramentos.filter((grupo) =>
+    grupo.categoria.toUpperCase().includes(activeCategoria)
+  );
 
   return (
     <main className="relative min-h-screen bg-[#f8f5f0] p-4 flex flex-col items-center">
       <button
         onClick={() => router.back()}
-        className="absolute top-6 left-6 px-4 py-2 bg-white shadow rounded-xl text-sm hover:bg-gray-100 transition"
+        className="absolute top-2 md:top-6 left-2 md:left-6 px-4 py-2 bg-white shadow rounded-xl text-sm hover:bg-gray-100 transition"
       >
         ← Voltar
       </button>
-
       {/* Banco do Olimpo */}
-      <div className="fixed top-6 right-6 z-50 bg-white/90 backdrop-blur-md border border-yellow-700/30 rounded-2xl shadow-md px-5 py-3">
+      <div className="fixed top-14 md:top-6 right-6 z-50 bg-white/90 backdrop-blur-md border border-yellow-700/30 rounded-2xl shadow-md px-5 py-3">
         <h2 className="text-xs font-semibold tracking-wide text-yellow-900/80 mb-2 flex items-center gap-1">
           🏛️ Meu banco do Olimpo
         </h2>
@@ -172,14 +170,34 @@ export default function LojaPage() {
         )}
       </div>
 
+      {/* Escolha char para comprar */}
+      {isLogged && (
+        <div className="fixed top-[9.5rem] md:top-[7.5rem] right-6 z-40 bg-white/90 backdrop-blur-md border border-yellow-700/20 rounded-2xl shadow-sm px-5 py-4 w-[260px]">
+          <label className="block text-xs font-semibold text-gray-700 mb-2">
+            🧙 Para quem você está comprando?
+          </label>
+
+          <select
+            value={selectedChar}
+            onChange={(e) => setSelectedChar(e.target.value)}
+            className="w-full text-sm rounded-lg border border-gray-300 px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-[#ba9963]"
+          >
+            {playerChars.map((char) => (
+              <option className="text-black" key={char.name} value={char.name}>
+                {char.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+
       <h1
         className={`${titleFont.className} text-2xl text-[1.8rem] font-bold mt-12 md:mt-8 mb-6`}
       >
         Lojas
       </h1>
-
       {/* Abas das lojas */}
-      <div className="flex flex-wrap justify-center gap-2 mb-8">
+      <div className="flex flex-wrap justify-center gap-2 mb-8 md:mt-0 mt-6">
         {tabs.map((tab) => (
           <button
             key={tab.id}
@@ -196,149 +214,87 @@ export default function LojaPage() {
           </button>
         ))}
       </div>
-
-      {/* {loading ? (
-        <p className="mt-20 text-gray-600 text-lg">Carregando lojas...</p>
-      ) : lojasFiltradas.length === 0 ? (
-        <p className="mt-20 text-gray-500 text-sm">
-          Nenhuma loja disponível nesta categoria.
-        </p>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full max-w-6xl">
-          {lojasFiltradas.map((loja) => (
-            <div
-              key={loja.slug}
-              className="p-4 bg-white rounded-xl shadow hover:shadow-lg transition flex flex-col gap-3"
-            >
-              <div>
-                <h2 className="text-lg font-bold">{loja.nome}</h2>
-                <p className="text-sm text-gray-600">{loja.descricao}</p>
-              </div>
-
-              <div className="flex flex-col gap-2">
-                {loja.itens.map((item) => (
-                  <div
-                    key={item.id}
-                    className="flex justify-between items-center p-2 bg-gray-50 rounded-lg"
-                  >
-                    <div>
-                      <p className="font-medium">{item.nome}</p>
-                      {item.descricao && (
-                        <p className="text-xs text-gray-500">
-                          {item.descricao}
-                        </p>
-                      )}
-                    </div>
-
-                    <span className="text-sm font-semibold">
-                      {item.preco} {item.moeda}
-                    </span>
-                  </div>
-                ))}
-              </div>
-
-              <button className="mt-auto px-3 py-2 text-sm rounded-lg bg-[#ba9963] text-white hover:bg-gray-800 transition">
-                Acessar loja
-              </button>
-            </div>
-          ))}
-        </div>
-      )} */}
-
       {loading ? (
-        <p className="mt-20 text-gray-600 text-lg">Carregando lojas...</p>
-      ) : activeTab === "aprimoramentos" ? (
-        <div className="w-full max-w-5xl flex flex-col gap-10">
-          {aprimoramentos.map((grupo, index) => (
-            <section key={`${grupo.categoria}-${grupo.nivel}-${index}`}>
-              {/* Categoria + nível */}
-              <h2
-                className={`${titleFont.className} text-lg mb-3 text-[#7a5c2e]`}
-              >
-                {grupo.categoria} · Nível {grupo.nivel}
-              </h2>
-
-              {/* Itens */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {grupo.itens.map((item, i) => (
-                  <div
-                    key={`${item.nome}-${i}`}
-                    className="bg-white rounded-xl shadow-sm border border-yellow-700/20 p-4 flex flex-col gap-2"
-                  >
-                    <div className="flex justify-between items-start gap-4">
-                      <h3 className="font-semibold text-sm text-gray-900">
-                        {item.nome}
-                      </h3>
-
-                      <span className="text-xs font-bold text-[#8b6a34] whitespace-nowrap">
-                        {item.custo}
-                      </span>
-                    </div>
-
-                    {item.descricao && (
-                      <p className="text-xs text-gray-600 leading-relaxed">
-                        {item.descricao}
-                      </p>
-                    )}
-
-                    <button className="mt-2 self-end px-3 py-1.5 text-xs rounded-lg bg-[#ba9963] text-white hover:bg-[#9e7f4f] transition">
-                      Adicionar ao carrinho
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </section>
-          ))}
-        </div>
-      ) : (
-        <p className="mt-20 text-gray-500 text-sm">
-          Nenhuma loja disponível nesta categoria.
+        <p className="mt-24 md:mt-20 text-gray-600 text-lg">
+          Carregando lojas...
         </p>
-      )}
+      ) : activeTab === "aprimoramentos" ? (
+        <>
+          <div className="flex flex-wrap justify-center gap-2 mb-10">
+            {categorias.map((cat) => (
+              <button
+                key={cat.id}
+                onClick={() => setActiveCategoria(cat.id as any)}
+                className={`px-4 py-2 rounded-xl text-xs font-semibold transition
+          ${
+            activeCategoria === cat.id
+              ? "bg-[#7a5c2e] text-white shadow"
+              : "bg-white text-gray-700 hover:bg-gray-100"
+          }
+        `}
+              >
+                {cat.label}
+              </button>
+            ))}
+          </div>
+          <div className="w-full max-w-5xl flex flex-col gap-10">
+            {aprimoramentosFiltrados.map((grupo, index) => (
+              <section key={`${grupo.categoria}-${grupo.nivel}-${index}`}>
+                {/* Categoria + nível */}
+                <h2
+                  className={`${titleFont.className} text-lg mb-3 text-[#7a5c2e]`}
+                >
+                  Nível {grupo.nivel}
+                </h2>
 
-      {/* {loading ? (
-        <p className="mt-20 text-gray-600 text-lg">Carregando lojas...</p>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full max-w-6xl">
-          {lojas.map((loja) => (
-            <div
-              key={loja.slug}
-              className="p-4 bg-white rounded-xl shadow hover:shadow-lg transition flex flex-col gap-3"
-            >
-              <div>
-                <h2 className="text-lg font-bold">{loja.nome}</h2>
-                <p className="text-sm text-gray-600">{loja.descricao}</p>
-              </div>
+                {/* Itens */}
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  {grupo.itens.map((item, i) => (
+                    <div
+                      key={`${item.nome}-${i}`}
+                      className="bg-white rounded-xl shadow-sm border border-yellow-700/20 p-4 flex flex-col gap-2"
+                    >
+                      <div className="flex flex-col md:flex-row md:justify-between items-start gap-4">
+                        <h3 className="font-semibold text-sm text-gray-900">
+                          {item.nome}
+                        </h3>
 
-              <div className="flex flex-col gap-2">
-                {loja.itens.map((item) => (
-                  <div
-                    key={item.id}
-                    className="flex justify-between items-center p-2 bg-gray-50 rounded-lg"
-                  >
-                    <div>
-                      <p className="font-medium">{item.nome}</p>
+                        {item.nome === "REGENERAÇÃO DE MANA" ? (
+                          <span className="text-xs font-bold text-[#8b6a34] whitespace-nowrap">
+                            {item.custo.split(" / ")[0]}
+                          </span>
+                        ) : (
+                          <span className="text-xs font-bold text-[#8b6a34] whitespace-nowrap">
+                            {item.custo}
+                          </span>
+                        )}
+                      </div>
+
+                      {item.nome === "REGENERAÇÃO DE MANA" && (
+                        <span className="text-xs font-bold text-red-400 whitespace-nowrap">
+                          {item.custo.split(" / ")[1]}
+                        </span>
+                      )}
+
                       {item.descricao && (
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-gray-600 text-justify hyphens-auto leading-snug">
                           {item.descricao}
                         </p>
                       )}
+
+                      <button className="mt-auto self-end px-3 py-1.5 text-xs rounded-lg bg-[#ba9963] text-white hover:bg-[#9e7f4f] transition">
+                        Adicionar ao carrinho
+                      </button>
                     </div>
-
-                    <span className="text-sm font-semibold">
-                      {item.preco} {item.moeda}
-                    </span>
-                  </div>
-                ))}
-              </div>
-
-              <button className="mt-auto px-3 py-2 text-sm rounded-lg bg-gray-900 text-white hover:bg-gray-800 transition">
-                Acessar loja
-              </button>
-            </div>
-          ))}
-        </div>
-      )} */}
+                  ))}
+                </div>
+              </section>
+            ))}
+          </div>
+        </>
+      ) : (
+        <p className="mt-20 text-gray-500 text-sm">Trabalhando nesta loja!</p>
+      )}
     </main>
   );
 }

@@ -523,6 +523,7 @@ export function parseAprimoramentos(raw: string[]) {
     //pegar categoria
     if (linha.startsWith("APRIMORAMENTOS")) {
       categoriaAtual = linha;
+      console.log(categoriaAtual);
 
       i++;
 
@@ -576,7 +577,6 @@ export function parseAprimoramentos(raw: string[]) {
     }
 
     if (raw[i] === undefined) break;
-    i++;
   }
 
   return result;
