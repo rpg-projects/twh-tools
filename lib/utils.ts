@@ -37,6 +37,15 @@ export function normalizeGoogleDocLink(link: string): string {
   return `https://docs.google.com/document/d/${documentId}/preview`;
 }
 
+const PERICIAS_COMBATE = [
+  "arcanismo",
+  "armas brancas",
+  "arqueirismo",
+  "arremessáveis",
+  "combate desarmado",
+  "laminas curtas",
+];
+
 // Extrai número dentro de parênteses: (+3) → 3
 function extrairBonus(str: string): number {
   const match = str.match(/\(([-+]?\d+)\)/);
@@ -121,6 +130,7 @@ export function calcularDados({
 
   // 3 — Extrai valores
   const totalAtributo = extrairTotalAtributo(atributos[nomeAtributo]);
+  console.log("valorPericia :>> ", valorPericia);
   const bonusPericia = extrairBonusPericia(valorPericia);
 
   // 4 — Verifica aprimoramentos
@@ -133,6 +143,10 @@ export function calcularDados({
     .toLowerCase()
     .replace(/^\w/, (c) => c.toUpperCase()); // primeira letra maiúscula
 
+  const periciaEhDeCombate = PERICIAS_COMBATE.includes(
+    nomePericiaFormatado.toLowerCase()
+  );
+
   const totalAprimoramentos = [];
   for (const apr of aprimoramentos) {
     // Procura match por nome da perícia ou por atributo
@@ -140,13 +154,22 @@ export function calcularDados({
       .toLowerCase()
       .includes(nomePericiaFormatado.toLowerCase());
 
+    const eSobreDano = apr.toLowerCase().includes("dano");
+    const eSobreConjuracao = apr.toLowerCase().includes("conjuração");
+    const eSobreAtaque = apr.toLowerCase().includes("ataque");
+
     // console.log("nomePericiaFormatado :>> ", nomePericiaFormatado);
     const contemAtributo = apr
       .toLowerCase()
       .includes(atributoParaUsar.toLowerCase());
-    // console.log("atributoParaUsar :>> ", atributoParaUsar);
 
-    if (contemPericia || contemAtributo) {
+    if (
+      (contemPericia ||
+        contemAtributo ||
+        (periciaEhDeCombate && eSobreAtaque)) &&
+      !eSobreDano &&
+      !eSobreConjuracao
+    ) {
       const valor = extrairBonusAprim(apr);
 
       if (valor !== 0 && valor) {
@@ -162,7 +185,7 @@ export function calcularDados({
   return (
     `${nomePericiaFormatado}: ${totalFinal} [` +
     `${nomeAtributo.toLowerCase()}: ${totalAtributo} | ` +
-    `${nomePericiaFormatado.toLowerCase()}: ${bonusPericia}` +
+    `${nomePericiaFormatado.toLowerCase()}: ${valorPericia}` +
     (bonusAprimoramentos ? ` | ${totalAprimoramentos.join(" | ")}` : "") +
     `]`
   ).replace(/\s+\]/, "]");

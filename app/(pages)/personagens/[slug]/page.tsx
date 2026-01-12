@@ -203,7 +203,7 @@ export default function PersonagemDetailPage() {
                     onClick={() => setDiceModalOpen(true)}
                     className="px-4 py-2 bg-green-500 text-white text-sm rounded-lg shadow hover:bg-green-600 transition"
                   >
-                    Simular dados
+                    Calculadora de perícias
                   </button>
                 </div>
               )}
