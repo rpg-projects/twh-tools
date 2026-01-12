@@ -12,10 +12,10 @@
   --font-mono: var(--font-geist-mono);
 }
 
-:root {
+/* :root {
   --background: #0a0a0a;
   --foreground: #ededed;
-}
+} */
 
 body {
   background: var(--background);
