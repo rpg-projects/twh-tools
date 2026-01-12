@@ -26,10 +26,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        // className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        className={bodyFont.className}
-      >
+      <body className={`${bodyFont.className} antialiased`}>
         <div className={titleFont.className + " hidden"} />
         {children}
       </body>

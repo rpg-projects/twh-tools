@@ -105,12 +105,14 @@ export function calcularDados({
   atributoAlternativo,
   atributos,
   aprimoramentos,
+  nivel,
 }: {
   nomePericia: string;
   pericias: Record<string, string>; // antes era Pericia, agora string
   atributoAlternativo?: string | null;
   atributos: Record<string, string>; // antes era Atributo, agora string
   aprimoramentos: string[];
+  nivel: number;
 }) {
   const valorPericia = pericias[nomePericia];
   if (!valorPericia) return "";
@@ -179,6 +181,9 @@ export function calcularDados({
       }
     }
   }
+
+  //4.5 - Soma da lista de deuses
+
   // 5 — Total final
   const totalFinal = totalAtributo + bonusPericia + bonusAprimoramentos;
 

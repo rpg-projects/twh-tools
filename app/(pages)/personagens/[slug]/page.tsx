@@ -223,6 +223,7 @@ export default function PersonagemDetailPage() {
                     pericias: stats?.pericias,
                     atributos: stats?.atributos,
                     aprimoramentos: stats?.aprimoramentos ?? [],
+                    nivel: char.level,
                   });
                 }}
               />
