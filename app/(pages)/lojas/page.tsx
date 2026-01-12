@@ -171,7 +171,7 @@ export default function LojaPage() {
       </div>
 
       {/* Escolha char para comprar */}
-      {isLogged && (
+      {/* {isLogged && (
         <div className="fixed top-[9.5rem] md:top-[7.5rem] right-6 z-40 bg-white/90 backdrop-blur-md border border-yellow-700/20 rounded-2xl shadow-sm px-5 py-4 w-[260px]">
           <label className="block text-xs font-semibold text-gray-700 mb-2">
             🧙 Para quem você está comprando?
@@ -189,7 +189,7 @@ export default function LojaPage() {
             ))}
           </select>
         </div>
-      )}
+      )} */}
 
       <h1
         className={`${titleFont.className} text-2xl text-[1.8rem] font-bold mt-12 md:mt-8 mb-6`}
@@ -259,7 +259,8 @@ export default function LojaPage() {
                           {item.nome}
                         </h3>
 
-                        {item.nome === "REGENERAÇÃO DE MANA" ? (
+                        {item.nome === "REGENERAÇÃO DE MANA" ||
+                        item.nome === "ACESSO AO BUNKER 9" ? (
                           <span className="text-xs font-bold text-[#8b6a34] whitespace-nowrap">
                             {item.custo.split(" / ")[0]}
                           </span>
@@ -270,11 +271,12 @@ export default function LojaPage() {
                         )}
                       </div>
 
-                      {item.nome === "REGENERAÇÃO DE MANA" && (
-                        <span className="text-xs font-bold text-red-400 whitespace-nowrap">
-                          {item.custo.split(" / ")[1]}
-                        </span>
-                      )}
+                      {item.nome === "REGENERAÇÃO DE MANA" ||
+                        (item.nome === "ACESSO AO BUNKER 9" && (
+                          <span className="text-xs font-bold text-red-400 whitespace-nowrap">
+                            {item.custo.split(" / ")[1]}
+                          </span>
+                        ))}
 
                       {item.descricao && (
                         <p className="text-xs text-gray-600 text-justify hyphens-auto leading-snug">
@@ -282,9 +284,9 @@ export default function LojaPage() {
                         </p>
                       )}
 
-                      <button className="mt-auto self-end px-3 py-1.5 text-xs rounded-lg bg-[#ba9963] text-white hover:bg-[#9e7f4f] transition">
+                      {/* <button className="mt-auto self-end px-3 py-1.5 text-xs rounded-lg bg-[#ba9963] text-white hover:bg-[#9e7f4f] transition">
                         Adicionar ao carrinho
-                      </button>
+                      </button> */}
                     </div>
                   ))}
                 </div>

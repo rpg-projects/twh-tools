@@ -22,9 +22,7 @@ export default function PPPage() {
 
       <div className="w-full max-w-md bg-white rounded-xl shadow p-4">
         {/* Conteúdo */}
-        <p className="text-gray-600">
-          Verifique aqui quando o PP está liberado.
-        </p>
+        <p className="text-gray-600">Em desenvolvimento.</p>
       </div>
     </main>
   );
