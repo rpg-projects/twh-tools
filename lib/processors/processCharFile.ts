@@ -1,5 +1,5 @@
 import { StoreAprimoramentos } from "@/types/loja";
-import { mapearParagrafos, parseDateAndGetAge } from "../utils";
+import { mapearParagrafos, calculateAge } from "../utils";
 
 export function processarConteudo(contentArray: any[]): {
   paragrafos: string[];
@@ -75,7 +75,7 @@ export async function readCharFile(doc: any) {
   const origin = mapa["CIDADE NATAL"] || "";
   const alignment = mapa["ALINHAMENTO"] || "";
   const nascimento = mapa["NASCIMENTO"] || "";
-  const age = parseDateAndGetAge(nascimento, "21/07/2022");
+  const age = calculateAge(nascimento);
 
   const avatar =
     [...images]
@@ -159,7 +159,7 @@ export function processarConteudoCompleto(contentArray: any[]): {
 //   const origin = mapa["CIDADE NATAL"] || "";
 //   const alignment = mapa["ALINHAMENTO"] || "";
 //   const nascimento = mapa["NASCIMENTO"] || "";
-//   const age = parseDateAndGetAge(nascimento, "21/07/2020");
+//   const age = calculateAge(nascimento, "21/07/2020");
 
 //   // função genérica para percorrer o mapa encadeado
 //   function extrairSecao(
@@ -420,7 +420,7 @@ export async function readCharCompleteFile(doc: any) {
   const origin = mapa["CIDADE NATAL"] || "";
   const alignment = mapa["ALINHAMENTO"] || "";
   const nascimento = mapa["NASCIMENTO"] || "";
-  const age = parseDateAndGetAge(nascimento, "21/07/2020");
+  const age = calculateAge(nascimento);
 
   const atributos = extrairAtributos(mapa);
   const bifurcacoes = extrairBifurcacoes(mapa);

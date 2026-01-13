@@ -1,7 +1,5 @@
-export function parseDateAndGetAge(
-  birthStr: string,
-  referenceStr: string
-): number {
+export function calculateAge(birthStr: string): number {
+  const referenceStr = "21/07/2023";
   const [birthDay, birthMonth, birthYear] = birthStr.split("/").map(Number);
   const [refDay, refMonth, refYear] = referenceStr.split("/").map(Number);
 
