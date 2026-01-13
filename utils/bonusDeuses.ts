@@ -1061,6 +1061,12 @@ export const BONUS_DEUSES: BonusPorDeus = {
   ],
   eos: [
     {
+      pericia: "arcanismo",
+      valor: 1,
+      nivelMin: 1,
+      titulo: "Dominação Crepuscular Inicial",
+    },
+    {
       pericia: "todas",
       valor: 1,
       nivelMin: 1,
@@ -1087,11 +1093,25 @@ export const BONUS_DEUSES: BonusPorDeus = {
       condicional: "precisa estar com asas ativas",
     },
     {
+      pericia: "arcanismo",
+      valor: 2,
+      nivelMin: 3,
+      titulo: "Dominação Crepuscular Treinada",
+      substitui: "Dominação Crepuscular Inicial",
+    },
+    {
       pericia: "persuasão",
       valor: 2,
       nivelMin: 4,
       titulo: "Asas da Aurora treinadas",
       condicional: "precisa estar com asas ativas",
+    },
+    {
+      pericia: "arcanismo",
+      valor: 3,
+      nivelMin: 5,
+      titulo: "Dominação Crepuscular Avançada",
+      substitui: "Dominação Crepuscular Treinada",
     },
     {
       ataque: true,
@@ -1243,6 +1263,119 @@ export const BONUS_DEUSES: BonusPorDeus = {
       nivelMin: 6,
       titulo: "Razão e Sensibilidade",
       condicional: "precisa estar com alguém com quem já foi em batalha antes",
+    },
+  ],
+  hécate: [
+    {
+      pericia: "arcanismo",
+      valor: 1,
+      nivelMin: 1,
+      titulo: "Dominação Arcana Inicial",
+    },
+    {
+      pericia: "arcanismo",
+      valor: 2,
+      nivelMin: 3,
+      titulo: "Dominação Arcana Treinada",
+      substitui: "Dominação Arcana Inicial",
+    },
+    {
+      pericia: "arcanismo",
+      valor: 3,
+      nivelMin: 5,
+      titulo: "Dominação Arcana Avançada",
+      substitui: "Dominação Arcana Treinada",
+    },
+    {
+      pericia: "todas",
+      valor: 1,
+      nivelMin: 1,
+      titulo: "Vantagem Submundana",
+      condicional:
+        "precisa estar em ambientes submundanos ou com alta concentração de espíritos, morte e cadáveres",
+    },
+    {
+      pericia: "todas",
+      valor: 1,
+      nivelMin: 2,
+      titulo: "Congregação bruxa",
+      condicional: "soma 1 para cada aliada bruxa (max 3)",
+    },
+    {
+      pericia: "arcanismo",
+      valor: 1,
+      nivelMin: 3,
+      titulo: "Levitação",
+    },
+    {
+      pericia: "todas",
+      valor: 2,
+      nivelMin: 4,
+      titulo: "Filha da Lua",
+      condicional:
+        "precisa estar de noite (das 18h às 6h) e tem que ser um teste",
+    },
+    {
+      pericia: "enganação",
+      valor: 3,
+      nivelMin: 5,
+      titulo: "Imposição mediúnica",
+      condicional: "para lidar com espíritos",
+    },
+    {
+      pericia: "persuasão",
+      valor: 3,
+      nivelMin: 5,
+      titulo: "Imposição mediúnica",
+      condicional: "para lidar com espíritos",
+    },
+  ],
+  hélio: [
+    {
+      pericia: "arcanismo",
+      valor: 1,
+      nivelMin: 1,
+      titulo: "Dominação Solar Inicial",
+    },
+    {
+      pericia: "arcanismo",
+      valor: 2,
+      nivelMin: 3,
+      titulo: "Dominação Solar Treinada",
+      substitui: "Dominação Solar Inicial",
+    },
+    {
+      pericia: "arcanismo",
+      valor: 3,
+      nivelMin: 5,
+      titulo: "Dominação Solar Avançada",
+      substitui: "Dominação Solar Treinada",
+    },
+    {
+      pericia: "todas",
+      valor: 1,
+      nivelMin: 1,
+      titulo: "Vantagem solar",
+      condicional: "precisa estar de dia (das 6h às 18h)",
+    },
+    {
+      pericia: "atletismo",
+      valor: 1,
+      nivelMin: 2,
+      titulo: "Domínio do Sol",
+    },
+    {
+      pericia: "condução",
+      valor: 1,
+      nivelMin: 2,
+      titulo: "Domínio do Sol",
+    },
+    {
+      pericia: "todas",
+      valor: 1,
+      nivelMin: 2,
+      titulo: "Sol da Meia-noite",
+      condicional: "precisa ter a bifurcação",
     },
   ],
   héracles: [
