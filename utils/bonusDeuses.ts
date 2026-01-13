@@ -525,10 +525,23 @@ export const BONUS_DEUSES: BonusPorDeus = {
       condicional: "precisar estar em ambientes aquáticos ou praias",
     },
     {
+      pericia: "arcanismo",
+      valor: 1,
+      nivelMin: 1,
+      titulo: "Dominação Aquática Inicial",
+    },
+    {
       pericia: "performance",
       valor: 2,
       nivelMin: 1,
       titulo: "Timbre perfeito",
+    },
+    {
+      pericia: "arcanismo",
+      valor: 2,
+      nivelMin: 3,
+      titulo: "Dominação Aquática Treinada",
+      substitui: "Dominação Aquática Inicial",
     },
     {
       pericia: "medicina",
@@ -536,8 +549,21 @@ export const BONUS_DEUSES: BonusPorDeus = {
       nivelMin: 3,
       titulo: "Pureza da água",
     },
+    {
+      pericia: "arcanismo",
+      valor: 3,
+      nivelMin: 5,
+      titulo: "Dominação Aquática Avançada",
+      substitui: "Dominação Aquática Treinada",
+    },
   ],
   perséfone: [
+    {
+      pericia: "arcanismo",
+      valor: 1,
+      nivelMin: 1,
+      titulo: "Dominação Vegetal Inicial",
+    },
     {
       pericia: "botânica",
       valor: 2,
@@ -573,6 +599,13 @@ export const BONUS_DEUSES: BonusPorDeus = {
     },
     {
       pericia: "arcanismo",
+      valor: 2,
+      nivelMin: 3,
+      titulo: "Dominação Vegetal Treinada",
+      substitui: "Dominação Vegetal Inicial",
+    },
+    {
+      pericia: "arcanismo",
       valor: 3,
       nivelMin: 4,
       titulo: "Dominação obscura",
@@ -585,6 +618,13 @@ export const BONUS_DEUSES: BonusPorDeus = {
       titulo: "Dominação obscura - nível 6",
       condicional: "precisa ter a bifurcação e estar nas sombras",
       substitui: "Dominação obscura",
+    },
+    {
+      pericia: "arcanismo",
+      valor: 3,
+      nivelMin: 5,
+      titulo: "Dominação Vegetal Avançada",
+      substitui: "Dominação Vegetal Treinada",
     },
     {
       pericia: "botânica",
@@ -646,10 +686,30 @@ export const BONUS_DEUSES: BonusPorDeus = {
       titulo: "Dr. Asclépio",
     },
     {
+      pericia: "arcanismo",
+      valor: 1,
+      nivelMin: 2,
+      titulo: "Dominação Sanguínea Inicial",
+    },
+    {
       pericia: "botânica",
       valor: 2,
       nivelMin: 3,
       titulo: "Conhecimento botânico",
+    },
+    {
+      pericia: "arcanismo",
+      valor: 2,
+      nivelMin: 4,
+      titulo: "Dominação Sanguínea Treinada",
+      substitui: "Dominação Sanguínea Inicial",
+    },
+    {
+      pericia: "arcanismo",
+      valor: 3,
+      nivelMin: 6,
+      titulo: "Dominação Sanguínea Avançada",
+      substitui: "Dominação Sanguínea Treinada",
     },
     {
       pericia: "religião",
@@ -660,6 +720,12 @@ export const BONUS_DEUSES: BonusPorDeus = {
     },
   ],
   astreia: [
+    {
+      pericia: "arcanismo",
+      valor: 1,
+      nivelMin: 1,
+      titulo: "Dominação Estelar Inicial",
+    },
     {
       pericia: "todas",
       valor: 1,
@@ -680,6 +746,13 @@ export const BONUS_DEUSES: BonusPorDeus = {
       titulo: "Matrona da Justiça",
     },
     {
+      pericia: "arcanismo",
+      valor: 2,
+      nivelMin: 3,
+      titulo: "Dominação Estelar Treinada",
+      substitui: "Dominação Estelar Inicial",
+    },
+    {
       pericia: "furtividade",
       valor: 2,
       nivelMin: 3,
@@ -691,6 +764,13 @@ export const BONUS_DEUSES: BonusPorDeus = {
       nivelMin: 3,
       titulo: "Poder da Constelação",
       condicional: "precisa estar ao lado de algum irmão",
+    },
+    {
+      pericia: "arcanismo",
+      valor: 3,
+      nivelMin: 5,
+      titulo: "Dominação Estelar Avançada",
+      substitui: "Dominação Estelar Treinada",
     },
   ],
   bia: [
@@ -723,6 +803,12 @@ export const BONUS_DEUSES: BonusPorDeus = {
   ],
   circe: [
     {
+      pericia: "arcanismo",
+      valor: 1,
+      nivelMin: 1,
+      titulo: "Dominação Arcana Inicial",
+    },
+    {
       pericia: "todas",
       valor: 1,
       nivelMin: 2,
@@ -742,6 +828,20 @@ export const BONUS_DEUSES: BonusPorDeus = {
       nivelMin: 2,
       titulo: "Filha do Sol",
       condicional: "precisa ser um teste, precisa estar de dia (das 6h às 18h)",
+    },
+    {
+      pericia: "arcanismo",
+      valor: 2,
+      nivelMin: 3,
+      titulo: "Dominação Arcana Treinada",
+      substitui: "Dominação Arcana Inicial",
+    },
+    {
+      pericia: "arcanismo",
+      valor: 3,
+      nivelMin: 5,
+      titulo: "Dominação Arcana Avançada",
+      substitui: "Dominação Arcana Treinada",
     },
   ],
   "fobos e deimos": [
@@ -844,6 +944,12 @@ export const BONUS_DEUSES: BonusPorDeus = {
   ],
   despina: [
     {
+      pericia: "arcanismo",
+      valor: 1,
+      nivelMin: 1,
+      titulo: "Dominação Glacial Inicial",
+    },
+    {
       pericia: "todas",
       valor: 1,
       nivelMin: 1,
@@ -859,11 +965,25 @@ export const BONUS_DEUSES: BonusPorDeus = {
         "precisa ter a bifurcação e estar no inverno ou em lugares glaciais",
     },
     {
+      pericia: "arcanismo",
+      valor: 2,
+      nivelMin: 3,
+      titulo: "Dominação Glacial Treinada",
+      substitui: "Dominação Glacial Inicial",
+    },
+    {
       pericia: "todas",
       valor: 3,
       nivelMin: 3,
       titulo: "Monisi",
       condicional: "precisa estar sozinho",
+    },
+    {
+      pericia: "arcanismo",
+      valor: 3,
+      nivelMin: 5,
+      titulo: "Dominação Glacial Avançada",
+      substitui: "Dominação Glacial Treinada",
     },
   ],
   ênio: [
@@ -907,6 +1027,12 @@ export const BONUS_DEUSES: BonusPorDeus = {
   ],
   éolo: [
     {
+      pericia: "arcanismo",
+      valor: 1,
+      nivelMin: 1,
+      titulo: "Dominação Eólica Inicial",
+    },
+    {
       pericia: "percepção",
       valor: 2,
       nivelMin: 1,
@@ -917,6 +1043,20 @@ export const BONUS_DEUSES: BonusPorDeus = {
       valor: 2,
       nivelMin: 2,
       titulo: "Eita como arremessa",
+    },
+    {
+      pericia: "arcanismo",
+      valor: 2,
+      nivelMin: 3,
+      titulo: "Dominação Eólica Treinada",
+      substitui: "Dominação Eólica Inicial",
+    },
+    {
+      pericia: "arcanismo",
+      valor: 3,
+      nivelMin: 5,
+      titulo: "Dominação Eólica Avançada",
+      substitui: "Dominação Eólica Treinada",
     },
   ],
   eos: [
@@ -1081,6 +1221,28 @@ export const BONUS_DEUSES: BonusPorDeus = {
       nivelMin: 2,
       titulo: "Glorifica muito",
       condicional: "precisa ter a bifurcação",
+    },
+  ],
+  hebe: [
+    {
+      pericia: "oficios",
+      valor: 2,
+      nivelMin: 3,
+      titulo: "Master chef",
+    },
+    {
+      pericia: "todas",
+      valor: 2,
+      nivelMin: 5,
+      titulo: "Padroeira das Noivas",
+      condicional: "precisa estar acompanhada da pessoa amada, ambos recebem",
+    },
+    {
+      pericia: "todas",
+      valor: 2,
+      nivelMin: 6,
+      titulo: "Razão e Sensibilidade",
+      condicional: "precisa estar com alguém com quem já foi em batalha antes",
     },
   ],
   héracles: [
