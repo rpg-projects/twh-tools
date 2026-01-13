@@ -5,8 +5,8 @@ import { CompleteChar } from "@/types/chars";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 
-import { calcularDados } from "@/lib/utils";
 import { ModalSimularDados } from "@/components/RollSimulation";
+import { calcularDados } from "@/utils/calculadoraDePericias";
 
 export default function PersonagemDetailPage() {
   const router = useRouter();
@@ -224,6 +224,7 @@ export default function PersonagemDetailPage() {
                     atributos: stats?.atributos,
                     aprimoramentos: stats?.aprimoramentos ?? [],
                     nivel: char.level,
+                    deus: char.god,
                   });
                 }}
               />
