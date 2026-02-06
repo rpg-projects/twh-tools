@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { CompleteChar } from "@/types/chars";
+import { CompleteChar, CompleteCharFile } from "@/types/chars";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 
@@ -14,7 +14,7 @@ export default function PersonagemDetailPage() {
   const slug = params.slug;
 
   const [playerName, setPlayerName] = useState(
-    typeof window !== "undefined" ? localStorage.getItem("player") : ""
+    typeof window !== "undefined" ? localStorage.getItem("player") : "",
   );
   const [char, setChar] = useState<CompleteChar | null>(null);
   const [loading, setLoading] = useState(true);
@@ -68,7 +68,8 @@ export default function PersonagemDetailPage() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ name: playerName, char }),
           });
-          const data = await res.json();
+          const data: CompleteCharFile = await res.json();
+          console.log("data :>> ", data);
           setStats({ ...data, showOnlyNonZeroPericias: true });
         } else if (activeTab === "equipamentos") {
           const res = await fetch("/api/charCompleteFile", {
@@ -215,7 +216,7 @@ export default function PersonagemDetailPage() {
                 onClose={() => setDiceModalOpen(false)}
                 onSelect={(
                   nomePericia: string,
-                  atributoAlternativo?: string | null
+                  atributoAlternativo?: string | null,
                 ) => {
                   return calcularDados({
                     nomePericia,
@@ -231,23 +232,44 @@ export default function PersonagemDetailPage() {
 
               <div className="flex flex-col gap-6">
                 {/* --- HP / DP / DE em cards --- */}
-                <div className="grid grid-cols-3 gap-3">
+                <div
+                  className={`grid gap-3 ${
+                    stats?.mp ? "grid-cols-4" : "grid-cols-3"
+                  }`}
+                >
+                  {/* HP */}
                   <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-center">
                     <p className="text-xs font-bold text-blue-700">HP</p>
                     <p className="text-xl font-semibold text-blue-900">
-                      {stats?.hp || 50}
+                      {stats?.hp ?? 50}
                     </p>
                   </div>
+
+                  {/* MP (condicional) */}
+                  {stats?.mp && (
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg px-1 py-3 md:p-3 text-center">
+                      <p className="text-xs text-center font-bold text-blue-700">
+                        MANA
+                      </p>
+                      <p className="text-xl font-semibold text-blue-900">
+                        {stats.mp}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* DP */}
                   <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-center">
                     <p className="text-xs font-bold text-blue-700">DP</p>
                     <p className="text-xl font-semibold text-blue-900">
-                      {stats?.dp || 30}
+                      {stats?.dp ?? 30}
                     </p>
                   </div>
+
+                  {/* DE */}
                   <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-center">
                     <p className="text-xs font-bold text-blue-700">DE</p>
                     <p className="text-xl font-semibold text-blue-900">
-                      {stats?.de || 5}
+                      {stats?.de ?? 5}
                     </p>
                   </div>
                 </div>
@@ -271,7 +293,7 @@ export default function PersonagemDetailPage() {
                           </p>
                           <p className="text-gray-600">{val}</p>
                         </div>
-                      )
+                      ),
                     )}
                   </div>
 
@@ -280,7 +302,7 @@ export default function PersonagemDetailPage() {
                     <tbody>
                       <tr className="bg-gray-50">
                         {Object.entries(
-                          (stats?.atributos as string[]) || {}
+                          (stats?.atributos as string[]) || {},
                         ).map(([key, val]) => (
                           <td
                             key={key}
@@ -327,7 +349,7 @@ export default function PersonagemDetailPage() {
                         .filter(([_, val]) =>
                           stats.showOnlyNonZeroPericias
                             ? !val.startsWith("0/")
-                            : true
+                            : true,
                         )
                         .map(([key, val], index) => (
                           <li
@@ -356,6 +378,27 @@ export default function PersonagemDetailPage() {
                     </h3>
                     <div className="grid grid-cols-2 gap-2">
                       {stats?.aprimoramentos?.map((a: string, i: number) => {
+                        return (
+                          <div
+                            key={i}
+                            className="px-1 md:px-3 py-2 text-sm md:text-base bg-yellow-50 border border-yellow-200 rounded-md text-gray-800"
+                          >
+                            {a}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* --- feiticos --- */}
+                {stats.feiticos && stats.feiticos.length > 0 && (
+                  <div>
+                    <h3 className="font-semibold mb-2 text-blue-600">
+                      FEITIÇOS / PONTOS ARCANOS: {stats.pontosArcanos}
+                    </h3>
+                    <div className="grid grid-cols-2 gap-2">
+                      {stats?.feiticos?.map((a: string, i: number) => {
                         return (
                           <div
                             key={i}

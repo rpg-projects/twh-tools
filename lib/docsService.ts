@@ -41,7 +41,7 @@ export default class DocsService {
     });
 
     const playerSheet = mainSheet.data.sheets?.find(
-      (s) => s.properties?.title === name
+      (s) => s.properties?.title === name,
     );
 
     if (!playerSheet) return { playerBank: {}, chars: [] };
@@ -95,7 +95,7 @@ export default class DocsService {
         row.values[3]?.userEnteredValue?.stringValue === "Formado" ||
         row.values[3]?.userEnteredValue?.stringValue === "Formada"
           ? 8
-          : row.values[3]?.userEnteredValue?.numberValue ?? 0;
+          : (row.values[3]?.userEnteredValue?.numberValue ?? 0);
 
       chars.push({
         summer,
@@ -154,6 +154,7 @@ export default class DocsService {
 
       const {
         hp,
+        mp,
         dp,
         de,
         origin,
@@ -164,6 +165,8 @@ export default class DocsService {
         // bifurcacoes,
         pericias,
         aprimoramentos,
+        pontosArcanos,
+        feiticos,
         equipamentos,
         itens,
       } = await readCharCompleteFile(doc);
@@ -171,6 +174,7 @@ export default class DocsService {
       return {
         ...char,
         hp,
+        mp,
         dp,
         de,
         origin,
@@ -181,6 +185,8 @@ export default class DocsService {
         // bifurcacoes,
         pericias,
         aprimoramentos: aprimoramentos.map((a) => a.slice(1)),
+        pontosArcanos,
+        feiticos,
         equipamentos,
         itens,
       };
@@ -223,7 +229,7 @@ export default class DocsService {
 
   calcularSomatorioDeAtributo(
     level: number,
-    atributos: Record<string, string>
+    atributos: Record<string, string>,
   ): { hasErrorsOnAttSum: boolean; somaAtual: number; somaCorreta: number } {
     let somaCorreta = 0;
 
@@ -369,7 +375,7 @@ export default class DocsService {
       const hasResilienciaMortal =
         char.god.toLowerCase() === "thanatos" &&
         bifurcacoes.some((b: string) =>
-          b.toLowerCase().includes("resiliência mortal")
+          b.toLowerCase().includes("resiliência mortal"),
         );
 
       const hpCorreto = this.calcularHP({
@@ -412,7 +418,7 @@ export default class DocsService {
 
     let aprimoramentos = extrairSecaoLojas(
       paragrafos,
-      "APRIMORAMENTOS OFENSIVOS"
+      "APRIMORAMENTOS OFENSIVOS",
     );
 
     const result = parseAprimoramentos(aprimoramentos);

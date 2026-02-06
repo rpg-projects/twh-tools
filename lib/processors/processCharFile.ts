@@ -83,7 +83,7 @@ export async function readCharFile(doc: any) {
       .map(
         (id) =>
           inlineObjects[id]?.inlineObjectProperties?.embeddedObject
-            ?.imageProperties?.contentUri || null
+            ?.imageProperties?.contentUri || null,
       )
       .find((uri) => uri !== null) || "";
 
@@ -234,7 +234,7 @@ export function processarConteudoCompleto(contentArray: any[]): {
 // }
 
 function extrairAtributos(
-  mapa: Record<string, string>
+  mapa: Record<string, string>,
 ): Record<string, string> {
   const chaves = [
     "FORÇA",
@@ -314,7 +314,7 @@ function extrairPericias(mapa: Record<string, string>): Record<string, string> {
 function extrairSecaoMap(
   mapa: Record<string, string>,
   inicio: string,
-  fimOpcional?: string[]
+  fimOpcional?: string[],
 ): Record<string, string> {
   const resultado: Record<string, string> = {};
   let atual = inicio;
@@ -350,31 +350,44 @@ function extrairSecaoMap(
   return resultado;
 }
 
+const CABECALHOS = [
+  "ATRIBUTOS",
+  "BIFURCAÇÕES",
+  "ADESTRAMENTO (CAR)",
+  "APRIMORAMENTOS",
+  "EQUIPAMENTOS",
+  "ITENS",
+  "FEITIÇOS / PONTOS ARCANOS",
+];
+
+function bateComFimOpcional(valor: string, fimOpcional?: string[]) {
+  if (!fimOpcional) return false;
+
+  return fimOpcional.some(
+    (fim) => fim.startsWith(valor) || valor.startsWith(fim),
+  );
+}
+
 // função para extrair lista de valores simples (para bifurcações, aprimoramentos, equipamentos, itens)
 export function extrairSecaoList(
   mapa: Record<string, string>,
   inicio: string,
-  fimOpcional?: string[]
+  fimOpcional?: string[],
 ): string[] {
   const resultado: string[] = [];
   let atual = inicio;
 
-  while (atual && (!fimOpcional || !fimOpcional.includes(atual))) {
+  while (
+    atual &&
+    (!fimOpcional || !fimOpcional.includes(atual)) &&
+    !bateComFimOpcional(atual, fimOpcional)
+  ) {
     const proximo = mapa[atual];
     if (!proximo) break;
 
     if (proximo && !Object.keys(mapa).includes(proximo)) {
       resultado.push(proximo);
-    } else if (
-      ![
-        "ATRIBUTOS",
-        "BIFURCAÇÕES",
-        "ADESTRAMENTO (CAR)",
-        "APRIMORAMENTOS",
-        "EQUIPAMENTOS",
-        "ITENS",
-      ].includes(proximo)
-    ) {
+    } else if (!CABECALHOS.includes(proximo)) {
       resultado.push(proximo);
     }
 
@@ -412,8 +425,10 @@ export async function readCharCompleteFile(doc: any) {
 
   const { paragrafos, images } = processarConteudoCompleto(contentArray);
   const mapa = mapearParagrafos(paragrafos);
+  console.log("mapa :>> ", mapa);
 
   const hp = mapa["PTS. VIDA"] || "";
+  const mp = mapa["MANA"] || "";
   const dp = mapa["DEF. PAS."] || "";
   const de = mapa["DEF. ESP."] || "";
 
@@ -427,7 +442,24 @@ export async function readCharCompleteFile(doc: any) {
   const pericias = extrairPericias(mapa);
   const aprimoramentos = extrairSecaoList(mapa, "APRIMORAMENTOS", [
     "EQUIPAMENTOS",
+    "FEITIÇOS / PONTOS ARCANOS",
+    "● Aprimoramento",
   ]).slice(0, -1);
+  if (aprimoramentos.length === 1 && aprimoramentos[0] === "● Aprimoramento") {
+    aprimoramentos.pop();
+  }
+
+  const inicioFeiticos: string = Object.keys(mapa).find((key) =>
+    /^FEITIÇOS \/ PONTOS ARCANOS.*/.test(key),
+  ) as string;
+  let pontosArcanos = inicioFeiticos || "";
+  if (pontosArcanos) pontosArcanos = pontosArcanos.split(": ")[1];
+  console.log("pontosArcanos :>> ", pontosArcanos);
+  const feiticos = extrairSecaoList(mapa, inicioFeiticos, [
+    "COMBATE",
+    "● Aprimoramento",
+  ]);
+
   const equipamentos = extrairSecaoList(mapa, "EQUIPAMENTOS", ["ITENS"]);
   const itens = extrairSecaoList(mapa, "ITENS", ["EXTRAS"]);
 
@@ -437,12 +469,13 @@ export async function readCharCompleteFile(doc: any) {
       .map(
         (id) =>
           inlineObjects[id]?.inlineObjectProperties?.embeddedObject
-            ?.imageProperties?.contentUri || null
+            ?.imageProperties?.contentUri || null,
       )
       .find((uri) => uri !== null) || "";
 
   return {
     hp,
+    mp,
     dp,
     de,
     origin,
@@ -453,6 +486,8 @@ export async function readCharCompleteFile(doc: any) {
     bifurcacoes,
     pericias,
     aprimoramentos,
+    pontosArcanos,
+    feiticos,
     equipamentos,
     itens,
   };
@@ -486,17 +521,17 @@ export async function getCharsHPComponents(doc: any) {
 export function extrairSecaoLojas(
   paragrafos: string[],
   inicio: string,
-  fim?: string
+  fim?: string,
 ) {
   const startIndex = paragrafos.findIndex((p) =>
-    p.toUpperCase().includes(inicio.toUpperCase())
+    p.toUpperCase().includes(inicio.toUpperCase()),
   );
 
   if (startIndex === -1) return [];
 
   const endIndex = fim
     ? paragrafos.findIndex(
-        (p, i) => i > startIndex && p.toUpperCase().includes(fim.toUpperCase())
+        (p, i) => i > startIndex && p.toUpperCase().includes(fim.toUpperCase()),
       )
     : -1;
 
