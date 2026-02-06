@@ -425,7 +425,6 @@ export async function readCharCompleteFile(doc: any) {
 
   const { paragrafos, images } = processarConteudoCompleto(contentArray);
   const mapa = mapearParagrafos(paragrafos);
-  console.log("mapa :>> ", mapa);
 
   const hp = mapa["PTS. VIDA"] || "";
   const mp = mapa["MANA"] || "";
@@ -454,14 +453,28 @@ export async function readCharCompleteFile(doc: any) {
   ) as string;
   let pontosArcanos = inicioFeiticos || "";
   if (pontosArcanos) pontosArcanos = pontosArcanos.split(": ")[1];
-  console.log("pontosArcanos :>> ", pontosArcanos);
+
   const feiticos = extrairSecaoList(mapa, inicioFeiticos, [
     "COMBATE",
     "● Aprimoramento",
   ]);
 
-  const equipamentos = extrairSecaoList(mapa, "EQUIPAMENTOS", ["ITENS"]);
-  const itens = extrairSecaoList(mapa, "ITENS", ["EXTRAS"]);
+  const equipamentosGeral = extrairSecaoList(mapa, "EQUIPAMENTOS", ["ITENS"]);
+  const equipamentosMago = extrairSecaoList(mapa, "COMBATE", [
+    "CONSUMÍVEIS",
+  ]).slice(0, -1);
+  const equipamentos =
+    equipamentosMago.length > equipamentosGeral.length
+      ? equipamentosMago
+      : equipamentosGeral;
+
+  // const itens = extrairSecaoList(mapa, "ITENS", ["EXTRAS"]);
+  const itensGeral = extrairSecaoList(mapa, "ITENS", ["EXTRAS"]).slice(0, -1);
+  const itensMago = extrairSecaoList(mapa, "CONSUMÍVEIS", ["ITENS"]).slice(
+    0,
+    -1,
+  );
+  const itens = itensMago.length > itensGeral.length ? itensMago : itensGeral;
 
   const avatar =
     [...images]
