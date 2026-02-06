@@ -20,7 +20,7 @@ export default function PersonagemDetailPage() {
   const [loading, setLoading] = useState(true);
 
   const [activeTab, setActiveTab] = useState<
-    "stats" | "chale" | "equipamentos"
+    "stats" | "chale" | "equipamentos" | "bifurcações"
   >("stats");
   const [stats, setStats] = useState<any>({
     showOnlyNonZeroPericias: true,
@@ -68,8 +68,9 @@ export default function PersonagemDetailPage() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ name: playerName, char }),
           });
+
           const data: CompleteCharFile = await res.json();
-          console.log("data :>> ", data);
+
           setStats({ ...data, showOnlyNonZeroPericias: true });
         } else if (activeTab === "equipamentos") {
           const res = await fetch("/api/charCompleteFile", {
@@ -79,11 +80,12 @@ export default function PersonagemDetailPage() {
           });
           const data = await res.json();
           setItems({ equipamentos: data.equipamentos, itens: data.itens });
-        } else if (activeTab === "chale") {
-          // const res = await fetch(`/api/getRelations?char=${char.name}`);
-          // const data = await res.json();
-          // setRelations(data);
         }
+        // else if (activeTab === "chale") {
+        // const res = await fetch(`/api/getRelations?char=${char.name}`);
+        // const data = await res.json();
+        // setRelations(data);
+        // }
       } catch (err) {
         console.error("Erro ao carregar aba:", err);
       } finally {
@@ -93,6 +95,35 @@ export default function PersonagemDetailPage() {
 
     fetchTabData();
   }, [activeTab, char, playerName]);
+
+  function normalizarNivel(nivel: string) {
+    return nivel.replace(" (EXTRA)", "");
+  }
+
+  function agruparBifurcacoes(lista: string[]) {
+    const grupos: { nivel: string; itens: string[] }[] = [];
+    let atual: { nivel: string; itens: string[] } | null = null;
+
+    for (const item of lista) {
+      if (item.startsWith("NÍVEL")) {
+        const nivelBase = normalizarNivel(item);
+
+        // 🔹 se for o mesmo nível base, não cria novo grupo
+        if (atual && normalizarNivel(atual.nivel) === nivelBase) {
+          continue;
+        }
+
+        atual = { nivel: nivelBase, itens: [] };
+        grupos.push(atual);
+      } else if (item !== "-" && atual) {
+        atual.itens.push(item);
+      }
+    }
+
+    return grupos;
+  }
+
+  console.log("stats.bifurcacoes :>> ", stats.bifurcacoes);
 
   if (loading) {
     return (
@@ -169,6 +200,17 @@ export default function PersonagemDetailPage() {
             </button>
 
             <button
+              onClick={() => setActiveTab("bifurcações")}
+              className={`w-full px-3 py-2 rounded-lg font-semibold text-sm ${
+                activeTab === "bifurcações"
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-200 hover:bg-gray-300"
+              }`}
+            >
+              BIFURCAÇÕES
+            </button>
+
+            <button
               onClick={() => setActiveTab("equipamentos")}
               className={`w-full px-3 py-2 rounded-lg font-semibold text-sm ${
                 activeTab === "equipamentos"
@@ -179,7 +221,7 @@ export default function PersonagemDetailPage() {
               EQUIPAMENTOS
             </button>
 
-            <button
+            {/* <button
               onClick={() => setActiveTab("chale")}
               className={`w-full px-3 py-2 rounded-lg font-semibold text-sm ${
                 activeTab === "chale"
@@ -188,7 +230,7 @@ export default function PersonagemDetailPage() {
               }`}
             >
               CHALÉ
-            </button>
+            </button> */}
           </div>
         </div>
 
@@ -443,6 +485,60 @@ export default function PersonagemDetailPage() {
                     </li>
                   ))}
                 </ul>
+              </div>
+            </div>
+          ) : activeTab === "bifurcações" ? (
+            <div className="flex flex-col gap-4">
+              <div>
+                <h3 className="font-semibold mb-2 text-blue-600">
+                  Bifurcações
+                </h3>
+
+                <div className="flex flex-col gap-3">
+                  {agruparBifurcacoes(stats?.bifurcacoes || []).map(
+                    (grupo, i) => (
+                      <div key={i}>
+                        <h4 className="font-semibold text-sm text-gray-700 mb-1">
+                          {grupo.nivel}
+                        </h4>
+
+                        {grupo.itens.length > 0 ? (
+                          <ul className="flex flex-col gap-1">
+                            {grupo.itens.map((item, j) => (
+                              <li
+                                key={j}
+                                className="px-3 py-2 bg-gray-50 rounded-md border border-gray-200"
+                              >
+                                {item}
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <p className="text-sm text-gray-400 italic">—</p>
+                        )}
+                      </div>
+                    ),
+                  )}
+                </div>
+              </div>
+
+              <div>
+                <h3 className="font-semibold mb-2 text-blue-600">
+                  Habilidade Exclusiva
+                </h3>
+
+                {stats.habExclusiva && (
+                  <p className="flex flex-col gap-1">
+                    {stats.habExclusiva
+                      .split("\n")
+                      .map((line: string, i: number) => (
+                        <span key={i}>
+                          {line}
+                          <br />
+                        </span>
+                      ))}
+                  </p>
+                )}
               </div>
             </div>
           ) : activeTab === "chale" ? (

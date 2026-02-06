@@ -397,6 +397,14 @@ export function extrairSecaoList(
   return resultado;
 }
 
+function extrairPosTraco(nivel: string, lista: string[]) {
+  const inicio = lista.indexOf(nivel);
+  if (inicio === -1) return [];
+
+  const fim = lista.indexOf("-", inicio);
+  return fim === -1 ? lista.slice(inicio) : lista.slice(inicio, fim);
+}
+
 function extrairBifurcacoes(mapa: Record<string, string>): string[] {
   function extrairBloco(inicio: string): string[] {
     const bloco: string[] = [inicio]; // adiciona o início
@@ -404,7 +412,8 @@ function extrairBifurcacoes(mapa: Record<string, string>): string[] {
 
     while (atual) {
       const proximo = mapa[atual];
-      if (!proximo || proximo === "ADESTRAMENTO (CAR)") break;
+      if (!proximo || proximo === "-" || proximo === "ADESTRAMENTO (CAR)")
+        break;
 
       bloco.push(proximo);
       atual = proximo;
@@ -414,9 +423,10 @@ function extrairBifurcacoes(mapa: Record<string, string>): string[] {
   }
 
   const blocoII = extrairBloco("NÍVEL II");
+  const blocoIV = extrairBloco("NÍVEL IV");
   const blocoVI = extrairBloco("NÍVEL VI");
 
-  return [...blocoII, ...blocoVI];
+  return [...blocoII, ...blocoIV, ...blocoVI];
 }
 
 export async function readCharCompleteFile(doc: any) {
@@ -437,8 +447,10 @@ export async function readCharCompleteFile(doc: any) {
   const age = calculateAge(nascimento);
 
   const atributos = extrairAtributos(mapa);
-  const bifurcacoes = extrairBifurcacoes(mapa);
   const pericias = extrairPericias(mapa);
+
+  const bifurcacoes = extrairBifurcacoes(mapa);
+
   const aprimoramentos = extrairSecaoList(mapa, "APRIMORAMENTOS", [
     "EQUIPAMENTOS",
     "FEITIÇOS / PONTOS ARCANOS",
@@ -448,12 +460,12 @@ export async function readCharCompleteFile(doc: any) {
     aprimoramentos.pop();
   }
 
-  const inicioFeiticos: string = Object.keys(mapa).find((key) =>
-    /^FEITIÇOS \/ PONTOS ARCANOS.*/.test(key),
-  ) as string;
+  const inicioFeiticos: string =
+    Object.keys(mapa).find((key) =>
+      /^FEITIÇOS \/ PONTOS ARCANOS.*/.test(key),
+    ) || "";
   let pontosArcanos = inicioFeiticos || "";
   if (pontosArcanos) pontosArcanos = pontosArcanos.split(": ")[1];
-
   const feiticos = extrairSecaoList(mapa, inicioFeiticos, [
     "COMBATE",
     "● Aprimoramento",
@@ -468,13 +480,26 @@ export async function readCharCompleteFile(doc: any) {
       ? equipamentosMago
       : equipamentosGeral;
 
-  // const itens = extrairSecaoList(mapa, "ITENS", ["EXTRAS"]);
-  const itensGeral = extrairSecaoList(mapa, "ITENS", ["EXTRAS"]).slice(0, -1);
-  const itensMago = extrairSecaoList(mapa, "CONSUMÍVEIS", ["ITENS"]).slice(
-    0,
-    -1,
-  );
+  const inicioHabExclusiva =
+    Object.keys(mapa).find((key) => /^HABILIDADE EXCLUSIVA.*/.test(key)) || "";
+
+  const itensGeral = extrairSecaoList(mapa, "ITENS", [
+    "EXTRAS",
+    inicioHabExclusiva,
+  ]).slice(0, -1);
+  const itensMago = extrairSecaoList(mapa, "CONSUMÍVEIS", [
+    "ITENS",
+    inicioHabExclusiva,
+  ]).slice(0, -1);
   const itens = itensMago.length > itensGeral.length ? itensMago : itensGeral;
+
+  const fimHabExclusiva = mapa[inicioHabExclusiva] || "";
+  const habExclusiva = [
+    inicioHabExclusiva.split("HABILIDADE EXCLUSIVA — ")[1],
+    fimHabExclusiva,
+  ]
+    .filter(Boolean)
+    .join("\n");
 
   const avatar =
     [...images]
@@ -503,6 +528,7 @@ export async function readCharCompleteFile(doc: any) {
     feiticos,
     equipamentos,
     itens,
+    habExclusiva,
   };
 }
 

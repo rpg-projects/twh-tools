@@ -20,16 +20,15 @@ export interface CompleteChar {
 }
 
 export interface CompleteCharFile {
-  name: string;
-  avatar: string;
   fileLink: string;
 
+  name: string;
+  avatar: string;
   age: number;
   nascimento: string;
   origin: string;
   alignment: string;
   god: string;
-
   level: number;
   summer: string;
 
@@ -40,12 +39,16 @@ export interface CompleteCharFile {
 
   atributos?: Record<string, any>;
   pericias?: Record<string, any>;
-
   aprimoramentos: string[];
-  equipamentos: string[];
-  itens: string[];
+
   pontosArcanos?: string;
   feiticos?: string[];
+
+  bifurcacoes?: string[];
+  habExclusiva?: string[];
+
+  equipamentos: string[];
+  itens: string[];
 }
 
 export interface PlayerBank {

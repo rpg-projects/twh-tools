@@ -162,13 +162,14 @@ export default class DocsService {
         age,
         avatar,
         atributos,
-        // bifurcacoes,
+        bifurcacoes,
         pericias,
         aprimoramentos,
         pontosArcanos,
         feiticos,
         equipamentos,
         itens,
+        habExclusiva,
       } = await readCharCompleteFile(doc);
 
       return {
@@ -182,13 +183,14 @@ export default class DocsService {
         age,
         avatar,
         atributos,
-        // bifurcacoes,
+        bifurcacoes,
         pericias,
         aprimoramentos: aprimoramentos.map((a) => a.slice(1)),
         pontosArcanos,
         feiticos,
         equipamentos,
         itens,
+        habExclusiva,
       };
     } catch (error: any) {
       console.error(error.message);
