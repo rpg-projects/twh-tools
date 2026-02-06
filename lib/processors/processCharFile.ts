@@ -469,7 +469,11 @@ export async function readCharCompleteFile(doc: any) {
   const feiticos = extrairSecaoList(mapa, inicioFeiticos, [
     "COMBATE",
     "● Aprimoramento",
+    "● Feitiços",
   ]);
+  if (feiticos.length === 1 && feiticos[0] === "● Feitiços") {
+    feiticos.pop();
+  }
 
   const equipamentosGeral = extrairSecaoList(mapa, "EQUIPAMENTOS", ["ITENS"]);
   const equipamentosMago = extrairSecaoList(mapa, "COMBATE", [
@@ -483,14 +487,21 @@ export async function readCharCompleteFile(doc: any) {
   const inicioHabExclusiva =
     Object.keys(mapa).find((key) => /^HABILIDADE EXCLUSIVA.*/.test(key)) || "";
 
-  const itensGeral = extrairSecaoList(mapa, "ITENS", [
-    "EXTRAS",
-    inicioHabExclusiva,
-  ]).slice(0, -1);
-  const itensMago = extrairSecaoList(mapa, "CONSUMÍVEIS", [
-    "ITENS",
-    inicioHabExclusiva,
-  ]).slice(0, -1);
+  const itensGeral =
+    inicioHabExclusiva !== ""
+      ? extrairSecaoList(mapa, "ITENS", ["EXTRAS", inicioHabExclusiva]).slice(
+          0,
+          -1,
+        )
+      : extrairSecaoList(mapa, "ITENS", ["EXTRAS"]).slice(0, -1);
+  console.log("itensGeral :>> ", itensGeral);
+  const itensMago =
+    inicioHabExclusiva !== ""
+      ? extrairSecaoList(mapa, "CONSUMÍVEIS", [
+          "EXTRAS",
+          inicioHabExclusiva,
+        ]).slice(0, -1)
+      : extrairSecaoList(mapa, "CONSUMÍVEIS", ["EXTRAS"]).slice(0, -1);
   const itens = itensMago.length > itensGeral.length ? itensMago : itensGeral;
 
   const fimHabExclusiva = mapa[inicioHabExclusiva] || "";
