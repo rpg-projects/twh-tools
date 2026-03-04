@@ -11,7 +11,7 @@ import { calcularDados } from "@/utils/calculadoraDePericias";
 export default function PersonagemDetailPage() {
   const router = useRouter();
   const params = useParams();
-  const slug = params.slug;
+  const slug: string = params.slug as string;
 
   const [playerName, setPlayerName] = useState(
     typeof window !== "undefined" ? localStorage.getItem("player") : "",
@@ -37,39 +37,71 @@ export default function PersonagemDetailPage() {
   const [items, setItems] = useState<any>(null);
   const [loadingTab, setLoadingTab] = useState(false);
 
-  // Carrega o personagem selecionado do localStorage
+  async function loadChar(playerName: string, char: CompleteChar) {
+    const res = await fetch("/api/charCompleteFile", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: playerName, char }),
+    });
+    const data: CompleteCharFile = await res.json();
+
+    return data;
+  }
+
   useEffect(() => {
-    const stored = localStorage.getItem("selectedChar");
-    if (!stored) {
-      router.push("/personagens");
-      return;
-    }
-    setChar(JSON.parse(stored));
+    if (!slug) return;
 
-    // Carrega playerName também, se ainda não tiver
-    if (typeof window !== "undefined") {
-      const storedPlayer = localStorage.getItem("player");
-      setPlayerName(storedPlayer || "");
+    async function fetchCharacter() {
+      setLoading(true);
+
+      try {
+        const playerName = slug.split("-")[0].toUpperCase();
+
+        const storedChars = localStorage.getItem("playerChars");
+        if (!storedChars) {
+          router.push("/personagens");
+          return;
+        }
+
+        const chars = JSON.parse(storedChars);
+
+        const foundChar = chars.find((c: any) => {
+          const generatedSlug = `${localStorage
+            .getItem("player")
+            ?.toLowerCase()}-${c.name.split(" ")[0].toLowerCase()}`;
+
+          return generatedSlug === slug;
+        });
+
+        if (!foundChar) {
+          router.push("/personagens");
+          return;
+        }
+
+        const data = await loadChar(playerName, foundChar);
+        setChar(data);
+        setStats({ ...data, showOnlyNonZeroPericias: true });
+        setPlayerName(playerName);
+      } catch (error) {
+        console.log("error :>> ", error);
+      } finally {
+        setLoading(false);
+      }
     }
 
-    setLoading(false);
-  }, []);
+    fetchCharacter();
+  }, [slug]);
 
   // Faz fetch quando char e playerName estão disponíveis
   useEffect(() => {
     if (!char || !playerName) return; // só executa quando temos ambos
 
-    async function fetchTabData() {
+    async function fetchTabData(playerName: string, char: CompleteChar) {
       setLoadingTab(true);
+
       try {
         if (activeTab === "stats") {
-          const res = await fetch("/api/charCompleteFile", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name: playerName, char }),
-          });
-
-          const data: CompleteCharFile = await res.json();
+          const data = await loadChar(playerName, char);
 
           setStats({ ...data, showOnlyNonZeroPericias: true });
         } else if (activeTab === "equipamentos") {
@@ -93,8 +125,8 @@ export default function PersonagemDetailPage() {
       }
     }
 
-    fetchTabData();
-  }, [activeTab, char, playerName]);
+    fetchTabData(playerName, char);
+  }, [activeTab]);
 
   function normalizarNivel(nivel: string) {
     return nivel.replace(" (EXTRA)", "");
@@ -145,7 +177,7 @@ export default function PersonagemDetailPage() {
     <main className="min-h-screen bg-[#f0f8ff] p-6 relative">
       {/* BOTÃO VOLTAR */}
       <button
-        onClick={() => router.back()}
+        onClick={() => router.push("/personagens")}
         className="absolute top-6 left-6 px-4 py-2 bg-white shadow rounded-xl text-sm hover:bg-gray-100 transition"
       >
         ← Voltar

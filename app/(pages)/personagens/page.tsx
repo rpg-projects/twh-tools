@@ -43,7 +43,7 @@ export default function PersonagensPage() {
   return (
     <main className="relative min-h-screen bg-[#f8f5f0] p-4 flex flex-col items-center">
       <button
-        onClick={() => router.back()}
+        onClick={() => router.push("/")}
         className="absolute top-6 left-6 px-4 py-2 bg-white shadow rounded-xl text-sm hover:bg-gray-100 transition"
       >
         ← Voltar
@@ -88,8 +88,8 @@ export default function PersonagensPage() {
                   `/personagens/${encodeURIComponent(
                     `${localStorage
                       .getItem("player")
-                      ?.toLowerCase()}-${char.name.split(" ")[0].toLowerCase()}`
-                  )}`
+                      ?.toLowerCase()}-${char.name.split(" ")[0].toLowerCase()}`,
+                  )}`,
                 );
               }}
               className="flex gap-2 p-4 bg-white rounded-xl shadow hover:shadow-lg transition cursor-pointer min-w-64"

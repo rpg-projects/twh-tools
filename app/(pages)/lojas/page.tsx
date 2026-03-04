@@ -73,7 +73,6 @@ export default function LojaPage() {
       let parsedChars = JSON.parse(savedChars);
       // parsedChars = parsedChars.map((char: any) => char.name.trim());
       setPlayerChars(parsedChars);
-      console.log("parsedChars :>> ", parsedChars);
 
       setPlayer(playerName);
     }
@@ -99,7 +98,7 @@ export default function LojaPage() {
 
   // const lojasFiltradas = lojas.filter((loja) => loja.slug === activeTab);
   const aprimoramentosFiltrados = aprimoramentos.filter((grupo) =>
-    grupo.categoria.toUpperCase().includes(activeCategoria)
+    grupo.categoria.toUpperCase().includes(activeCategoria),
   );
 
   return (
