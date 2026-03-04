@@ -26,6 +26,12 @@ export default function Home() {
             </button>
           </Link>
 
+          <Link href="/bestiario">
+            <button className="w-full px-4 py-3 text-base font-semibold bg-white shadow rounded-xl hover:bg-gray-100 transition">
+              Bestiário
+            </button>
+          </Link>
+
           <Link href="/hp">
             <button className="w-full px-4 py-3 text-base font-semibold bg-white shadow rounded-xl hover:bg-gray-100 transition">
               Calculadora de HP
