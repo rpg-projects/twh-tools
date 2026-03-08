@@ -1,25 +1,21 @@
-import clientPromise from "@/lib/mongodb";
+import { syncBestiario } from "@/lib/bestiarioSync";
+import { NextResponse } from "next/server";
 
 export async function GET() {
-  const client = await clientPromise;
-  const db = client.db("dev_db");
-
   console.log("Iniciando sincronização...");
 
-  // exemplo de dados (depois você troca pela API real)
-  //   const dados = [
-  //     { slug: "minotauro", nome: "Minotauro" },
-  //     { slug: "medusa", nome: "Medusa" },
-  //   ];
+  try {
+    const result = await syncBestiario();
 
-  //   for (const item of dados) {
-  //     await db
-  //       .collection("conteudos")
-  //       .updateOne({ slug: item.slug }, { $set: item }, { upsert: true });
-  //   }
+    console.log("result :>> ", result);
 
-  return Response.json({
-    ok: true,
-    message: "Sincronização concluída",
-  });
+    return Response.json({
+      ok: true,
+      message: "Sincronização concluída",
+    });
+  } catch (err) {
+    console.error(err);
+
+    return NextResponse.json({ error: "sync failed" }, { status: 500 });
+  }
 }

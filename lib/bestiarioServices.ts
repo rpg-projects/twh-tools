@@ -247,4 +247,38 @@ export default class BestiarioService {
 
     return monstrosComImagem;
   }
+
+  async getBestiarioFromGoogle(): Promise<Monstro[]> {
+    const { docs } = await getAuthService();
+
+    const [aereos, aquaticos, submundanos, terrestres] = await Promise.all([
+      this.getMonstrosFromFile(
+        "https://docs.google.com/document/d/1AXt_vY4tn_SJlbufgVmlOfWGVpqjaE5ODgRt9vYMzcM",
+        "ANEMOI THUELLAI",
+        docs,
+      ),
+      this.getMonstrosFromFile(
+        "https://docs.google.com/document/d/1QyC9YWtVKDlgmdEH_sk-krpF03mPZHv4lsW6q-hbR_s",
+        "CARCINO & CARCINO REI",
+        docs,
+      ),
+      this.getMonstrosFromFile(
+        "https://docs.google.com/document/d/1BLtAkBAFMBsDFIkKuF9kXq3dkWRKFxXbFkwsFabMD7g",
+        "ARA",
+        docs,
+      ),
+      this.getMonstrosFromFile(
+        "https://docs.google.com/document/d/1_GM-URb3RsA5c012UxfATg_Woy8OPHwDZ19mhNAk1Fs",
+        "APRÓSOPO",
+        docs,
+      ),
+    ]);
+
+    return [
+      ...aereos.map((m) => ({ ...m, tipo: "AEREO" as const })),
+      ...aquaticos.map((m) => ({ ...m, tipo: "AQUATICO" as const })),
+      ...submundanos.map((m) => ({ ...m, tipo: "SUBMUNDANO" as const })),
+      ...terrestres.map((m) => ({ ...m, tipo: "TERRESTRE" as const })),
+    ];
+  }
 }

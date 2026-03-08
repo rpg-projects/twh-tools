@@ -1,3 +1,11 @@
+import { ObjectId } from "mongodb";
+
+export type MonstroDB = Monstro & {
+  _id: ObjectId;
+  updatedAt: Date;
+  sourceModifiedTime?: string;
+};
+
 export type Monstro = {
   imagem: string;
   nome: string;
