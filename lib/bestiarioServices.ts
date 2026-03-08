@@ -235,19 +235,6 @@ export default class BestiarioService {
     let monstros = this.extrairSecaoBestiario(paragrafos, palavraInicioSecao);
     const result = this.parseMonstros(monstros);
 
-    // const imagensResolvidas = images
-    //   .map(
-    //     (id) =>
-    //       inlineObjects[id]?.inlineObjectProperties?.embeddedObject
-    //         ?.imageProperties?.contentUri || null,
-    //   )
-    //   .filter((uri): uri is string => Boolean(uri))
-    //   .slice(1);
-
-    // const monstrosComImagem = result.map((m, index) => ({
-    //   ...m,
-    //   imagem: imagensResolvidas[index] ?? null,
-    // }));
     const monstrosComImagem = result.map((monstro, index) => {
       const imageId = images[index + 1]; // +1 pula a capa
       return {
