@@ -7,7 +7,8 @@ export type MonstroDB = Monstro & {
 };
 
 export type Monstro = {
-  imagem: string;
+  imagem: string | null;
+  imagemFonte: string;
   nome: string;
   encontradoEm: string;
   rank: string;

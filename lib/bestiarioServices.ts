@@ -1,6 +1,7 @@
-import { Monstro } from "@/types/monstros";
+import { Monstro, MonstroDB } from "@/types/monstros";
 import { getAuthService } from "./googleAuth";
 import { processarConteudo } from "./processors/processCharFile";
+import { uploadImageToSupabase } from "./supabase";
 
 export default class BestiarioService {
   extrairSecaoBestiario(paragrafos: string[], inicio: string, fim?: string) {
@@ -219,7 +220,9 @@ export default class BestiarioService {
     fileLink: string,
     palavraInicioSecao: string,
     docs: any,
+    existingMap: Map<string, MonstroDB>,
   ): Promise<Monstro[]> {
+    //ler o doc do google
     const documentId = fileLink.split("/d/")[1]?.split("/")[0];
     if (!documentId) throw new Error("Link de documento inválido");
 
@@ -232,23 +235,56 @@ export default class BestiarioService {
 
     let { paragrafos, images } = processarConteudo(content);
 
+    //pegar os monstros com suas propriedades
     let monstros = this.extrairSecaoBestiario(paragrafos, palavraInicioSecao);
     const result = this.parseMonstros(monstros);
 
-    const monstrosComImagem = result.map((monstro, index) => {
-      const imageId = images[index + 1]; // +1 pula a capa
-      return {
-        ...monstro,
-        imagem:
-          inlineObjects[imageId]?.inlineObjectProperties?.embeddedObject
-            ?.imageProperties?.contentUri || null,
-      };
-    });
+    //pegar as imagens, subir pro supabase e colocar nos objetos dos monstros
+    const monstrosComImagem = await Promise.all(
+      result.map(async (monstro, index) => {
+        const imageId = images[index + 1];
 
+        const googleImage =
+          inlineObjects[imageId]?.inlineObjectProperties?.embeddedObject
+            ?.imageProperties?.contentUri;
+
+        let imagemFinal = null;
+
+        // 👇 checagem inteligente
+        const existing = existingMap.get(monstro.nome);
+
+        if (existing?.imagem && existing.imagemFonte === googleImage) {
+          // mantém a imagem atual (sem reupload desnecessário)
+          console.log(`Reutilizando imagem: ${monstro.nome}`);
+          imagemFinal = existing.imagem;
+        } else if (googleImage) {
+          const slug = monstro.nome
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/\s+/g, "-")
+            .toLowerCase();
+
+          console.log(`Upload nova imagem: ${monstro.nome}`);
+          imagemFinal = await uploadImageToSupabase(googleImage, slug);
+        }
+
+        if (!imagemFinal && googleImage) {
+          throw new Error(`Falha ao fazer upload da imagem: ${monstro.nome}`);
+        }
+
+        return {
+          ...monstro,
+          imagem: imagemFinal,
+          imagemFonte: googleImage ?? "",
+        };
+      }),
+    );
     return monstrosComImagem;
   }
 
-  async getBestiarioFromGoogle(): Promise<Monstro[]> {
+  async getBestiarioFromGoogle(
+    existingMap: Map<string, MonstroDB>,
+  ): Promise<Monstro[]> {
     const { docs } = await getAuthService();
 
     const [aereos, aquaticos, submundanos, terrestres] = await Promise.all([
@@ -256,21 +292,25 @@ export default class BestiarioService {
         "https://docs.google.com/document/d/1AXt_vY4tn_SJlbufgVmlOfWGVpqjaE5ODgRt9vYMzcM",
         "ANEMOI THUELLAI",
         docs,
+        existingMap,
       ),
       this.getMonstrosFromFile(
         "https://docs.google.com/document/d/1QyC9YWtVKDlgmdEH_sk-krpF03mPZHv4lsW6q-hbR_s",
         "CARCINO & CARCINO REI",
         docs,
+        existingMap,
       ),
       this.getMonstrosFromFile(
         "https://docs.google.com/document/d/1BLtAkBAFMBsDFIkKuF9kXq3dkWRKFxXbFkwsFabMD7g",
         "ARA",
         docs,
+        existingMap,
       ),
       this.getMonstrosFromFile(
         "https://docs.google.com/document/d/1_GM-URb3RsA5c012UxfATg_Woy8OPHwDZ19mhNAk1Fs",
         "APRÓSOPO",
         docs,
+        existingMap,
       ),
     ]);
 

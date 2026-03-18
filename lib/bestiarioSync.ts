@@ -9,11 +9,11 @@ export async function syncBestiario() {
   const db = client.db();
 
   const collection = db.collection<MonstroDB>("bestiario");
-
-  const googleData: Monstro[] = await service.getBestiarioFromGoogle();
   const dbData: MonstroDB[] = await collection.find({}).toArray();
 
   const dbMap = new Map(dbData.map((m) => [m.nome, m]));
+
+  const googleData: Monstro[] = await service.getBestiarioFromGoogle(dbMap);
 
   const operations: any[] = [];
 
@@ -27,7 +27,9 @@ export async function syncBestiario() {
       continue;
     }
 
-    if (JSON.stringify(existing) !== JSON.stringify(monstro)) {
+    const { _id, updatedAt, ...existingClean } = existing;
+
+    if (JSON.stringify(existingClean) !== JSON.stringify(monstro)) {
       operations.push({
         updateOne: {
           filter: { nome: monstro.nome },

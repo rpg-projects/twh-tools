@@ -7,7 +7,11 @@ export async function GET() {
   try {
     const result = await syncBestiario();
 
-    console.log("result :>> ", result);
+    console.log("[CRON] Sync finalizada:", {
+      total: result.totalGoogle,
+      ops: result.operations,
+      date: new Date().toISOString(),
+    });
 
     return Response.json({
       ok: true,
